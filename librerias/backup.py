@@ -52,21 +52,10 @@ def backup(weekday):
 
 if __name__ == "__main__":
     start_time = datetime.datetime.now()
-    path = "."
+    path = "../.."
     welcome()
     weekday = weekday_picker()
     backup(weekday)
     end_time = datetime.datetime.now()
     duration = end_time - start_time
     print(f'The backup took {duration.seconds} seconds and {duration.microseconds} microseconds.')
-
-
-        # with zipfile.ZipFile(weekday_picker(), 'w') as f:
-        # for t in os.walk(path):
-        #     _, _, files = t
-        #     for fn in files:
-        #         _, ext = os.path.splitext(fn)
-        #         if ext in backup_extensions:
-        #             sizes.append(os.path.getsize(fn))
-        #             print(f"Saving {fn}")
-        #             f.write(fn)

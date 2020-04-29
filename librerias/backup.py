@@ -27,38 +27,46 @@ def weekday_picker():
     return weekday
 
 
-def backup():
+def backup(weekday):
 
     ''' This function will make a backup of all the files with a specific extension at the desired path on a .zip file'''
 
     backup_extensions = [".py", ".ipynb",".md", ".rst"]
     sizes = []
 
-    with zipfile.ZipFile(weekday_picker(), 'w') as f:
+    with zipfile.ZipFile(weekday, 'w') as f:
         for t in os.walk(path):
-            _, _, files = t
-            for fn in files:
-                _, ext = os.path.splitext(fn)
+            dirpath, _, files = t
+            for filename in files:
+                _, ext = os.path.splitext(filename)
                 if ext in backup_extensions:
-                    sizes.append(os.path.getsize(fn))
-                    print(f"Saving {fn}")
-                    f.write(fn)
+                    full_path = os.path.join(dirpath, filename)
+                    sizes.append(os.path.getsize(full_path))
+                    print(f"Saving {full_path}")
+                    f.write(full_path)
 
     print('')
     print(f'A total of {len(sizes)} files with a total size of {sum(sizes)} bytes have been saved.')
     print(f'The average size of the files is {st.mean(sizes)} bytes.')
 
 
-def main():
-    welcome()
-    backup()
-
 if __name__ == "__main__":
     start_time = datetime.datetime.now()
     path = "."
-    main()
+    welcome()
+    weekday = weekday_picker()
+    backup(weekday)
     end_time = datetime.datetime.now()
     duration = end_time - start_time
     print(f'The backup took {duration.seconds} seconds and {duration.microseconds} microseconds.')
 
 
+        # with zipfile.ZipFile(weekday_picker(), 'w') as f:
+        # for t in os.walk(path):
+        #     _, _, files = t
+        #     for fn in files:
+        #         _, ext = os.path.splitext(fn)
+        #         if ext in backup_extensions:
+        #             sizes.append(os.path.getsize(fn))
+        #             print(f"Saving {fn}")
+        #             f.write(fn)

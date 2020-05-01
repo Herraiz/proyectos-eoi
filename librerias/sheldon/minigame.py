@@ -1,11 +1,15 @@
 import random
 import time
 
-def welcome():
-    print('\nWelcome to the "Rock, Paper, Scissors, Lizard, Spock" game by @RoberHerraiz\n')
 
 def player():
-    player_choice = input('''
+
+    '''Here the player can read the rules of the game and select one of the "moves" for playing '''
+
+    # While bucle until the player select a move
+    finish = False
+    while not finish:
+        player_choice = input('''
 **************************************
 
 Select your choice!
@@ -21,70 +25,8 @@ Type "rules" if you don't know them.
 **************************************\n
 ''').lower()
 
-    if player_choice == "rules":
-        rules()
-
-    # elif player_choice == "rock" or "paper" or "scissors" or "lizard" or "spock":  #### POR QUÉ NO FUNCIONA SI EL INPUT ES ASDOJIHAJSD????
-    #     print(f'\n\nYou selected: {player_choice}\n')
-    #     return player_choice
-
-    elif player_choice == "rock":
-        print(f'\n\nYou selected {player_choice}\n')
-        return player_choice
-
-    elif player_choice == "paper":
-        print(f'\n\nYou selected {player_choice}\n')
-        return player_choice
-
-    elif player_choice == "scissors":
-        print(f'\n\nYou selected {player_choice}\n')
-        return player_choice
-
-    elif player_choice == "lizard":
-        print(f'\n\nYou selected {player_choice}\n')
-        return player_choice
-
-    elif player_choice == "spock":
-        print(f'\n\nYou selected {player_choice}\n')
-        return player_choice
-
-    else:
-        print('\nSorry, your answer is not correct. Please try again.\n')
-        return player()
-
-def opponent():
-    print("\nWaiting for your opponent's play...\n")
-    time.sleep(1)
-    choices = ["rock", "paper", "scissors", "lizard", "spock"]
-    opponent_choice = random.choice(choices)
-    print(f'\nYour opponent played: {opponent_choice.capitalize()}.\n\n')
-    return opponent_choice
-
-def resolution(player_choice, opponent_choice):
-    time.sleep(1)
-    winmoves = {
-        "rock": ["scissors", "lizard"],
-        "paper": ["rock", "spock"],
-        "scissors": ["paper", "lizard"],
-        "lizard": ["paper", "spock"],
-        "spock": ["scissors", "rock"]
-        }
-    if player_choice == opponent_choice:
-        return print("Draw!\n")
-    elif opponent_choice in winmoves[player_choice]:
-        return print("You win!!\n")
-    else:
-        return print("You lose!\n")
-
-def retry():
-    retry_choice = input('\nType "y" for playing more! ').lower()
-    if retry_choice == "y":
-        return main()
-    else:
-        quit
-
-def rules():
-    print('''
+        if player_choice == "rules":
+            print('''
 Scissors cuts paper.
 Paper covers rock.
 Rock crushes lizard.
@@ -98,16 +40,60 @@ Rock crushes scissors.
 
 Now... good luck!!
 
-    ''')
-    time.sleep(3)
-    return player()
+''')
+            time.sleep(3)
 
-def main():
-    player_move = player()
-    opponent_move = opponent()
-    resolution(player_move, opponent_move)
-    retry()
+        elif player_choice in ["rock", "paper", "scissors", "lizard", "spock"]:
+            print(f'\n\nYou selected: {player_choice}\n')
+            finnish = True # bucle finished!
+            return player_choice
+        else:
+            print("\nSorry, your answer is not correct. Please try again.")
+            time.sleep(1)
+
+        
+def opponent():
+
+    ''' The computer will pick a random move from choices list '''
+
+    print("\nWaiting for your opponent's play...\n")
+    time.sleep(1)
+    choices = ["rock", "paper", "scissors", "lizard", "spock"]
+    opponent_choice = random.choice(choices)
+    print(f'\nYour opponent played: {opponent_choice.capitalize()}.\n\n')
+    return opponent_choice
+
+def resolution(player_choice, opponent_choice):
+
+    ''' This can be a little tricky. We're using a dictionary: the key will be your move
+        and the value is a list with the moves you beat.'''
+
+    time.sleep(1)
+    winmoves = {
+        "rock": ["scissors", "lizard"],
+        "paper": ["rock", "spock"],
+        "scissors": ["paper", "lizard"],
+        "lizard": ["paper", "spock"],
+        "spock": ["scissors", "rock"]
+        }
+    if player_choice == opponent_choice:
+        return print("Draw!\n")
+
+    # Search your choice in the dictionary's keys. Is your oppoment choice on that value list?
+    # If positive, you win. If not, you lose.   
+    elif opponent_choice in winmoves[player_choice]:
+        return print("You win!!\n")
+    else:
+        return print("You lose!\n")
+
 
 if __name__ == "__main__":
-    welcome()
-    main()
+    print('\nWelcome to the "Rock, Paper, Scissors, Lizard, Spock" game by @RoberHerraiz\n')
+
+    # Bucle for keep playing all the time! :)
+    retry_choice = None
+    while retry_choice != "q":
+        player_move = player()
+        opponent_move = opponent()
+        resolution(player_move, opponent_move)
+        retry_choice = input('\nType "r" for stop or anything else for continue! ').lower()

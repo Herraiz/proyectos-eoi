@@ -6,7 +6,7 @@ def player():
 
     '''Here the player can read the rules of the game and select one of the "moves" for playing '''
 
-    # While bucle for keeping here until the player select a correct move
+    # While loop for keeping here until the player select a correct move
     while True:
         player_choice = input('''
 **************************************
@@ -44,7 +44,7 @@ Now... good luck!!
 
         elif player_choice in ["rock", "paper", "scissors", "lizard", "spock"]:
             print(f'\n\nYou selected: {player_choice}\n')
-            return player_choice # bucle exit
+            return player_choice # loop exit
         else:
             print("\nSorry, your answer is not correct. Please try again.")
             time.sleep(1)
@@ -83,16 +83,14 @@ def resolution(player_choice, opponent_choice):
     # If positive, you win. If not, you lose.   
     elif opponent_choice in winmoves[player_choice]:
         print("You win!!\n")
-        return 
     else:
         print("You lose!\n")
-        return 
 
 
 if __name__ == "__main__":
     print('\nWelcome to the "Rock, Paper, Scissors, Lizard, Spock" game by @RoberHerraiz\n')
 
-    # Bucle for keep playing all the time! :)
+    # loop for keep playing all the time! :)
     retry_choice = None
     while retry_choice != "q":
         player_move = player()

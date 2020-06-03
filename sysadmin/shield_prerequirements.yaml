@@ -1,8 +1,11 @@
 - name: Shield Deployment Ansible Playbook - Pre-requirements
   hosts: vbox
+  become: yes
+  become_user: root
+  become_method: su
   tasks:
 
-#ansible-playbook -k -K shield_prerequirements.yaml            
+#ansible-playbook -K shield_prerequirements.yaml            
 
 # sudo management
 
@@ -10,17 +13,18 @@
       apt:
         name: sudo
         update_cache: yes
-      become: yes
-      become_user: root
-      become_method: su
+
 
     - name: adding <USER> to sudo group
       user:
         append: yes
         groups: sudo
         name: herraiz
-      become: yes
-      become_user: root
-      become_method: su
 
-#TODO! aquí falta newgrp, que falla
+
+# Packages installation
+
+    - name: Installing packages with apt
+      apt:
+        name: git, nginx, python3-pip, python3-venv
+        update_cache: yes

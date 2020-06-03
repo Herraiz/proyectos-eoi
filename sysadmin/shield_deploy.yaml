@@ -1,31 +1,23 @@
+# ansible-playbook -K shield_deploy.yaml   
+
 - name: Shield Deployment Ansible Playbook
   hosts: vbox
-  become: yes
-  become
+
+# make a variable for /home/herraiz/shield
+
+  vars:
+    SHIELD_DIR: /home/herraiz/shield
+
   tasks:
 
-# ansible-playbook -k -K shield_deploy.yaml   
+# Environment var creation
 
-# Packages installation
+    - name: Clone shield project from github
+      git:
+        clone: yes
+        repo: https://github.com/RoberHerraiz/shield.git
+        dest: '{{ SHIELD_DIR }}'
 
-    - name: Installing packages with apt
-      apt:
-        name: git, nginx, python3-pip, python3-venv
-        update_cache: yes
-
-    # - name: start nginx
-    #   service:
-    #     name: nginx
-    #     state: started
-    # - name: Install uwsgi (pip)
-    #   pip:
-    #     name: uwsgi
-    #     version: latest
-    # - name: Clone shield project (git)
-    #   git:
-    #     clone: yes
-    #     repo: https://github.com/RoberHerraiz/shield.git
-    #     dest: /var/www/html/shield
     # - name: Replace /etc/ssh/sshd_config (replace)
     #   replace:
     #     path: /etc/ssh/sshd_config

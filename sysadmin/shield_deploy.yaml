@@ -3,23 +3,91 @@
 - name: Shield Deployment Ansible Playbook
   hosts: vbox
 
-# make a variable for /home/herraiz/shield
-
   vars:
     SHIELD_DIR: /home/herraiz/shield
+    SHIELD_DIR_2: /var/www/shield
 
   tasks:
 
-# Environment var creation
+# Clone project from GitHub
 
-    - name: Clone shield project from github
+    - name: Cloning shield project from GitHub
       git:
         clone: yes
         repo: https://github.com/RoberHerraiz/shield.git
         dest: '{{ SHIELD_DIR }}'
+        force: yes # añadido para que no falle al clonar el repo con cambios locales
+
+# Virtual Env creation
+
+    - name: Creating VirtualEnv
+      command: python3 -m venv '{{ SHIELD_DIR }}/venv'
+
+    # - name: venv activation
+    #   shell: . '{{ SHIELD_DIR }}/venv/bin/activate'
+
+# Dependencies installation
+
+    - name: Installing wheel
+      pip:
+        name: wheel
+        virtualenv: '{{ SHIELD_DIR }}/venv'
+
+    - name: Installing pip requirements
+      pip:
+        requirements: '{{ SHIELD_DIR }}/requirements.txt'
+        virtualenv: '{{ SHIELD_DIR }}/venv'
+
+
+# Migrations and data load
+
+    - name: Making migrations - Django
+      django_manage:
+        command: makemigrations
+        app_path: '{{ SHIELD_DIR }}'
+        virtualenv: '{{ SHIELD_DIR }}/venv'
+
+    - name: Migrate - Django
+      django_manage:
+        command: migrate
+        app_path: '{{ SHIELD_DIR }}'
+        virtualenv: '{{ SHIELD_DIR }}/venv'
+
+    - name: Loading data - Django
+      django_manage:
+        command: loaddata
+        fixtures: '{{ SHIELD_DIR }}/metahumans/dumpdata.json' 
+        app_path: '{{ SHIELD_DIR }}'
+        virtualenv: '{{ SHIELD_DIR }}/venv'
+
+
+# Static optimization
+
+    - name: Adding static config to Django settings # en mi git ya está esto, cuidado!
+      shell: echo "STATIC_ROOT = os.path.join(BASE_DIR, '/static')" >> '{{ SHIELD_DIR }}/shield/settings.py'
+
+    - name: Collecting static - Django
+      django_manage:
+        command: collectstatic
+        app_path: '{{ SHIELD_DIR }}'
+        virtualenv: '{{ SHIELD_DIR }}/venv'
+      become: yes
+
+# Move the project to the final location
+
+    - name: Moving project folder
+      become: yes
+      become_user: herraiz
+      become_method: sudo
+      command: mv '{{ SHIELD_DIR }}' '{{ SHIELD_DIR_2 }}'
+
+
 
     # - name: Replace /etc/ssh/sshd_config (replace)
     #   replace:
     #     path: /etc/ssh/sshd_config
     #     regexp: ^PasswordAuthentication no$
     #     replace: PasswordAuthentication yes
+
+
+

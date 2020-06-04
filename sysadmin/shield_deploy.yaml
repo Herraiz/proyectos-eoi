@@ -72,6 +72,8 @@
         app_path: '{{ SHIELD_DIR }}'
         virtualenv: '{{ SHIELD_DIR }}/venv'
       become: yes
+      become_user: herraiz
+      
 
 # Move the project to the final location
 

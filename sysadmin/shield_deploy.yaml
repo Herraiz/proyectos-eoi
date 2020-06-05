@@ -4,14 +4,14 @@
   hosts: vbox
 
   vars:
-    SHIELD_DIR: /home/herraiz/shield
-    SHIELD_DIR_2: /var/www/shield
+    SHIELD_DIR: /var/www/shield
 
   tasks:
 
 # Clone project from GitHub
 
     - name: Cloning shield project from GitHub
+      become: yes
       git:
         clone: yes
         repo: https://github.com/RoberHerraiz/shield.git
@@ -21,19 +21,20 @@
 # Virtual Env creation
 
     - name: Creating VirtualEnv
+      become: yes
       command: python3 -m venv '{{ SHIELD_DIR }}/venv'
 
-    # - name: venv activation
-    #   shell: . '{{ SHIELD_DIR }}/venv/bin/activate'
 
 # Dependencies installation
 
     - name: Installing wheel
+      become: yes
       pip:
         name: wheel
         virtualenv: '{{ SHIELD_DIR }}/venv'
 
     - name: Installing pip requirements
+      become: yes
       pip:
         requirements: '{{ SHIELD_DIR }}/requirements.txt'
         virtualenv: '{{ SHIELD_DIR }}/venv'
@@ -54,6 +55,7 @@
         virtualenv: '{{ SHIELD_DIR }}/venv'
 
     - name: Loading data - Django
+      become: yes
       django_manage:
         command: loaddata
         fixtures: '{{ SHIELD_DIR }}/metahumans/dumpdata.json' 
@@ -63,33 +65,96 @@
 
 # Static optimization
 
-    - name: Adding static config to Django settings # en mi git ya está esto, cuidado!
+    - name: Adding static config to Django settings
+      become: yes
       shell: echo "STATIC_ROOT = os.path.join(BASE_DIR, '/static')" >> '{{ SHIELD_DIR }}/shield/settings.py'
 
     - name: Collecting static - Django
+      become: yes
       django_manage:
         command: collectstatic
         app_path: '{{ SHIELD_DIR }}'
         virtualenv: '{{ SHIELD_DIR }}/venv'
-      become: yes
-      become_user: herraiz
       
 
-# Move the project to the final location
+# Adjust permissions
 
-    - name: Moving project folder
+    - name: Change file permissions for www-data
       become: yes
-      become_user: herraiz
-      become_method: sudo
-      command: mv '{{ SHIELD_DIR }}' '{{ SHIELD_DIR_2 }}'
+      file:
+        path: '{{ SHIELD_DIR }}'
+        state: directory
+        recurse: yes
+        group: www-data
+        owner: www-data
 
 
+# uWSGI config
 
-    # - name: Replace /etc/ssh/sshd_config (replace)
-    #   replace:
-    #     path: /etc/ssh/sshd_config
-    #     regexp: ^PasswordAuthentication no$
-    #     replace: PasswordAuthentication yes
+    - name: Installing uWSGI
+      become: yes
+      pip:
+        name: uwsgi
+        # virtualenv: '{{ SHIELD_DIR }}/venv'
+    
+    - name: Creating vassals directory
+      become: yes
+      file:
+        path: /etc/uwsgi/vassals
+        state: directory
 
 
+# Vassal config
 
+# 'uwsgi.ini' file was uploaded to github shield's project
+
+    - name: Creating vassal directory
+      become: yes
+      file:
+        path: '/var/log/uwsgi/'
+        state: directory
+        recurse: yes
+
+    - name: Creating logto file and changing permissions
+      become: yes
+      file:
+        path: '/var/log/uwsgi/shield.log'
+        state: touch
+        owner: www-data
+
+    - name: Creating symlink to 
+      become: yes
+      file:
+        src: '{{ SHIELD_DIR }}/uwsgi.ini'
+        path: '/etc/uwsgi/vassals/shield.ini'
+        state: link
+
+# Emperor configuration
+
+#'emperor.ini' and 'uwsgi-emperor.service' files were uploaded to github shield's project
+
+    - name: Moving emperor.ini to /etc/uwsgi
+      become: yes
+      copy:
+        remote_src: yes
+        src: '{{ SHIELD_DIR }}/emperor.ini'
+        dest: '/etc/uwsgi/'
+
+    - name: Moving emperor service to /etc/systemd/system/
+      become: yes
+      copy:
+        remote_src: yes
+        src: '{{ SHIELD_DIR }}/uwsgi-emperor.service'
+        dest: '/etc/systemd/system/'     
+
+    - name: Reloading daemons
+      become: yes
+      systemd:
+        daemon_reload: yes
+
+    - name: Starting uwsgi-emperor service and making him start on boot
+      become: yes
+      service:
+        name: uwsgi-emperor
+        state: started
+        # enabled: yes

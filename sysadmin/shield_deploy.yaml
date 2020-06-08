@@ -1,4 +1,5 @@
-# ansible-playbook -K shield_deploy.yaml   
+#ansible-playbook -K shield_deploy.yaml   
+
 
 - name: Shield Deployment Ansible Playbook
   hosts: vbox
@@ -16,7 +17,7 @@
         clone: yes
         repo: https://github.com/RoberHerraiz/shield.git
         dest: '{{ SHIELD_DIR }}'
-        force: yes # añadido para que no falle al clonar el repo con cambios locales
+        force: yes
 
 # Virtual Env creation
 
@@ -65,9 +66,7 @@
 
 # Static optimization
 
-    - name: Adding static config to Django settings
-      become: yes
-      shell: echo "STATIC_ROOT = os.path.join(BASE_DIR, '/static')" >> '{{ SHIELD_DIR }}/shield/settings.py'
+# Static_root modified at repo
 
     - name: Collecting static - Django
       become: yes
@@ -79,7 +78,7 @@
 
 # Adjust permissions
 
-    - name: Change file permissions for www-data
+    - name: Changing file permissions for www-data
       become: yes
       file:
         path: '{{ SHIELD_DIR }}'
@@ -95,7 +94,6 @@
       become: yes
       pip:
         name: uwsgi
-        # virtualenv: '{{ SHIELD_DIR }}/venv'
     
     - name: Creating vassals directory
       become: yes
@@ -122,7 +120,7 @@
         state: touch
         owner: www-data
 
-    - name: Creating symlink to 
+    - name: Creating symlink for uwsgi.ini
       become: yes
       file:
         src: '{{ SHIELD_DIR }}/uwsgi.ini'
@@ -152,9 +150,39 @@
       systemd:
         daemon_reload: yes
 
-    - name: Starting uwsgi-emperor service and making him start on boot
+    - name: Starting and enabling start-on-boot of uwsgi-emperor service
       become: yes
       service:
         name: uwsgi-emperor
         state: started
         # enabled: yes
+
+
+# Nginx configuration
+
+    - name: Deactivating default nginx welcome page
+      become: yes
+      file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent # delete
+
+    - name: Moving nginx config file from repo
+      become: yes
+      copy:
+        remote_src: yes
+        src: '{{ SHIELD_DIR }}/shield.conf'
+        dest: '/etc/nginx/sites-available/'
+
+    - name: Creating symlink to sites-enabled
+      become: yes
+      file:
+        src: '/etc/nginx/sites-available/shield.conf'
+        path: '/etc/nginx/sites-enabled/shield.conf'
+        state: link
+    
+    - name: Restart nginx
+      become: yes
+      service:
+        name: nginx
+        state: restarted
+        enabled: yes

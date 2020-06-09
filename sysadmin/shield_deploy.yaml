@@ -2,12 +2,30 @@
 
 
 - name: Shield Deployment Ansible Playbook
-  hosts: vbox
+  hosts: all
 
   vars:
     SHIELD_DIR: /var/www/shield
 
   tasks:
+
+# sudo management
+
+    - name: installing sudo
+      become: yes
+      apt:
+        name: sudo
+        update_cache: yes
+
+
+# Packages installation
+
+    - name: Installing packages with apt
+      become: yes
+      apt:
+        name: git, nginx, python3-pip, python3-venv
+        update_cache: yes
+
 
 # Clone project from GitHub
 
@@ -155,7 +173,7 @@
       service:
         name: uwsgi-emperor
         state: started
-        # enabled: yes
+        enabled: yes
 
 
 # Nginx configuration

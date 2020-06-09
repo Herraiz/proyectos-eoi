@@ -1,0 +1,11 @@
+Vagrant.configure("2") do |config|
+
+  config.vm.box = "generic/debian10"
+
+  config.vm.provision "ansible" do |ansible|
+    ansible.playbook = "shield_deploy.yaml"
+    ansible.extra_vars = { ansible_python_interpreter:"/usr/bin/python3" }
+    end
+
+  config.vm.post_up_message = "Deployed Django-based shield app, created by @RoberHerraiz for the EOI Python specialization course. Enjoy!"
+end

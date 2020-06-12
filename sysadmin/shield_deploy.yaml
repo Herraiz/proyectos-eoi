@@ -81,7 +81,7 @@
 
 # Static optimization
 
-# Static_root modified at repo
+# Static_root modified incluyed at GitHub
 
     - name: Collecting static - Django
       become: yes
@@ -179,7 +179,7 @@
       become: yes
       file:
         path: /etc/nginx/sites-enabled/default
-        state: absent # delete
+        state: absent 
 
     - name: Moving nginx config file from repo
       become: yes

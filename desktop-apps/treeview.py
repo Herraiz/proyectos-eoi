@@ -31,12 +31,11 @@ class MyMainWindow(QMainWindow):
             e.ignore()
 
 # IMPORTANTE
-
+windowp = QMainWindow()
 window2 = MyMainWindow()
-# window.setWindowTitle("PyNotepad")
-window2.setCentralWidget(editor)
 
-file_menu = window2.menuBar().addMenu("&File")
+
+file_menu = windowp.menuBar().addMenu("&File")
 file_path = None
 
 def new_document():
@@ -112,10 +111,12 @@ def show_about_dialog():
     QMessageBox.about(window2, "About PyNotepad", text)
 
 
-help_menu = window2.menuBar().addMenu("&Help")
+help_menu = windowp.menuBar().addMenu("&Help")
 about_action = QAction("&About")
 about_action.triggered.connect(show_about_dialog)
 help_menu.addAction(about_action)
+
+window2.setCentralWidget(editor)
 
 #### fin pynotepad
 model = QDirModel()
@@ -123,12 +124,20 @@ window = QWidget()
 view = QTreeView()
 view.setModel(model)
 view.setRootIndex(model.index(home))
+
+layout2 = QVBoxLayout()
+layout2.addWidget(windowp)
+
 layout = QHBoxLayout()
-layout.addWidget(view)
-layout.addWidget(window2)  # --- añadir editor
-window.setLayout(layout)
+layout2.insertLayout(1, layout, stretch=1)
+layout.addWidget(view, 27)
+
+layout.addWidget(window2, 73)
 
 
-window.resize(1000, 900)
+window.setLayout(layout2)
+
+
+window.resize(1450, 900)
 window.show()
 app.exec()

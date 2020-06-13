@@ -1,6 +1,7 @@
 from os.path import expanduser
 from PyQt5.QtGui import QKeySequence, QTextDocument, QFont
 from PyQt5.QtWidgets import *
+# from PyQt5.QtCore import QFile
 
 home = expanduser('..')
 
@@ -89,6 +90,12 @@ def show_save_dialog():
         return True
     return False
 
+def open_from_filebrowser(file_path):
+    file_contents = ""
+    with open(file_path, 'r') as f:
+        file_contents = f.read()
+    editor.setPlainText(file_contents)
+
 
 save_action = QAction("&Save")
 save_action.triggered.connect(save)
@@ -119,20 +126,40 @@ help_menu.addAction(about_action)
 window2.setCentralWidget(editor)
 
 #### fin pynotepad
-model = QDirModel()
+
+#### inicio tree view
+
 window = QWidget()
+
+model = QDirModel()
 view = QTreeView()
+# view.setExpandsOnDoubleClick(False) ## activa que se tenga que usar doble click para expandir
+view.setSortingEnabled(True) # permite ordenar
+view.resizeColumnToContents(True) # esto no rula
 view.setModel(model)
 view.setRootIndex(model.index(home))
+
+def on_double_click(index):
+    '''
+    This function get the filepath of the double clicked item and if it
+    meet the given requirements, open that file on the editor widget.
+    '''
+    global file_path
+    file_path= model.filePath(index)
+    open_from_filebrowser(file_path)
+
+view.doubleClicked.connect(on_double_click)
+
+#### fin treeview
 
 layout2 = QVBoxLayout()
 layout2.addWidget(windowp)
 
 layout = QHBoxLayout()
 layout2.insertLayout(1, layout, stretch=1)
-layout.addWidget(view, 27)
+layout.addWidget(view, 35)
 
-layout.addWidget(window2, 73)
+layout.addWidget(window2, 65)
 
 
 window.setLayout(layout2)

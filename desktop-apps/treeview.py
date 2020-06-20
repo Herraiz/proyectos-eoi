@@ -3,7 +3,7 @@ from PyQt5.QtGui import QKeySequence, QTextDocument, QFont
 from PyQt5.QtWidgets import *
 # from PyQt5.QtCore import QFile
 
-home = expanduser('.')
+home = expanduser('./Proyectos/proyectos-eoi/')
 
 app = QApplication([])
 app.setApplicationName('PyFileBrowser')
@@ -15,7 +15,7 @@ editor = QPlainTextEdit()
 editor.document().setDefaultFont(QFont("monospace"))
 
 def ask_for_confirmation():
-    answer = QMessageBox.question(window2, "Confirm closing",
+    answer = QMessageBox.question(right_window, "Confirm closing",
                 "You have unsaved changes. Are you sure you want to exit?", 
                 QMessageBox.Save | QMessageBox.Discard | QMessageBox.Cancel)
     return answer
@@ -33,7 +33,7 @@ class MyMainWindow(QMainWindow):
 
 # IMPORTANTE
 windowp = QMainWindow()
-window2 = MyMainWindow()
+right_window = MyMainWindow()
 
 
 file_menu = windowp.menuBar().addMenu("&File")
@@ -59,7 +59,7 @@ file_menu.addAction(new_action)
 
 def show_open_dialog():
     global file_path
-    filename, _ = QFileDialog.getOpenFileName(window2, 'Open...')
+    filename, _ = QFileDialog.getOpenFileName(right_window, 'Open...')
     if filename:
         file_contents = ""
         with open(filename, 'r') as f:
@@ -83,7 +83,7 @@ def save():
 
 def show_save_dialog():
     global file_path
-    filename, _ = QFileDialog.getSaveFileName(window2, 'Save as...')
+    filename, _ = QFileDialog.getSaveFileName(right_window, 'Save as...')
     if filename:
         file_path = filename
         save()
@@ -103,7 +103,7 @@ save_action.setShortcut(QKeySequence.Save)
 file_menu.addAction(save_action)
 
 close_action = QAction("&Close")
-close_action.triggered.connect(window2.close)
+close_action.triggered.connect(right_window.close)
 close_action.setShortcut(QKeySequence.Quit)
 file_menu.addAction(close_action)
 
@@ -115,7 +115,7 @@ def show_about_dialog():
         </center>
         <p>Version 0.0.1</p>
     """
-    QMessageBox.about(window2, "About PyNotepad", text)
+    QMessageBox.about(right_window, "About PyNotepad", text)
 
 
 help_menu = windowp.menuBar().addMenu("&Help")
@@ -123,7 +123,7 @@ about_action = QAction("&About")
 about_action.triggered.connect(show_about_dialog)
 help_menu.addAction(about_action)
 
-window2.setCentralWidget(editor)
+right_window.setCentralWidget(editor)
 
 #### fin pynotepad
 
@@ -159,12 +159,12 @@ layout = QHBoxLayout()
 layout2.insertLayout(1, layout, stretch=1)
 layout.addWidget(view, 35)
 
-layout.addWidget(window2, 65)
+layout.addWidget(right_window, 65)
 
 
 window.setLayout(layout2)
 
 
-window.resize(1450, 900)
+window.resize(1700, 900)
 window.show()
 app.exec()

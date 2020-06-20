@@ -3,7 +3,7 @@ from PyQt5.QtGui import QKeySequence, QTextDocument, QFont
 from PyQt5.QtWidgets import *
 # from PyQt5.QtCore import QFile
 
-home = expanduser('..')
+home = expanduser('.')
 
 app = QApplication([])
 app.setApplicationName('PyFileBrowser')

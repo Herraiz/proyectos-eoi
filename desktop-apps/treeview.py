@@ -20,7 +20,7 @@ def ask_for_confirmation():
                 QMessageBox.Save | QMessageBox.Discard | QMessageBox.Cancel)
     return answer
 
-class MyMainWindow(QMainWindow):
+class MyEditorWindow(QMainWindow):
     def closeEvent(self, e):
         if not editor.document().isModified():
             return
@@ -32,11 +32,13 @@ class MyMainWindow(QMainWindow):
             e.ignore()
 
 # IMPORTANTE
-windowp = QMainWindow()
-right_window = MyMainWindow()
+window = QWidget()
+left_window = QMainWindow()
+right_window = MyEditorWindow()
 
 
-file_menu = windowp.menuBar().addMenu("&File")
+
+file_menu = left_window.menuBar().addMenu("&File")
 file_path = None
 
 def new_document():
@@ -118,7 +120,7 @@ def show_about_dialog():
     QMessageBox.about(right_window, "About PyNotepad", text)
 
 
-help_menu = windowp.menuBar().addMenu("&Help")
+help_menu = left_window.menuBar().addMenu("&Help")
 about_action = QAction("&About")
 about_action.triggered.connect(show_about_dialog)
 help_menu.addAction(about_action)
@@ -129,7 +131,7 @@ right_window.setCentralWidget(editor)
 
 #### inicio tree view
 
-window = QWidget()
+
 
 model = QDirModel()
 view = QTreeView()
@@ -153,7 +155,7 @@ view.doubleClicked.connect(on_double_click)
 #### fin treeview
 
 layout2 = QVBoxLayout()
-layout2.addWidget(windowp)
+layout2.addWidget(left_window)
 
 layout = QHBoxLayout()
 layout2.insertLayout(1, layout, stretch=1)

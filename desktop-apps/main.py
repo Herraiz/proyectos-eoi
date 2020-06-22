@@ -91,6 +91,9 @@ class MainWindow(QMainWindow):
 		self.file_menu.addAction(self.close_action)
 
 	def closeEvent(self, e):
+
+		'''This function prevents from closing without saving'''
+
 		if not self.editor.document().isModified():
 			return
 		answer = self.ask_for_confirmation()
@@ -110,8 +113,8 @@ class MainWindow(QMainWindow):
 		will use the self.file_path variable and when you double click, 
 		you set a value for the variable.
 		'''
-		self.explorer_file_path = self.model.filePath(index)
 
+		self.explorer_file_path = self.model.filePath(index)
 		# If you double click on a directory or an image, nothing will happend
 		try:
 			self.open_from_explorer()
@@ -132,9 +135,12 @@ class MainWindow(QMainWindow):
 			elif answer == QMessageBox.Cancel:
 				return
 		file_contents = ""
+		# self.explorer_file_path = self.file_path
 		with open(self.explorer_file_path, 'r') as f:
 			file_contents = f.read()
 		self.editor.setPlainText(file_contents)
+		# We save the file_path again so that self.save () works correctly	
+		self.file_path = self.explorer_file_path 
 
 	def new_document(self):
 		'''
@@ -151,7 +157,13 @@ class MainWindow(QMainWindow):
 		self.editor.clear()
 		self.file_path = None
 
+
 	def save(self):
+		'''
+		Standard save function. Will ask the file_path throught a dialog
+		if there is no file_path
+		'''
+
 		if self.file_path is None:
 			return self.show_save_dialog()
 		else:
@@ -160,7 +172,11 @@ class MainWindow(QMainWindow):
 			self.editor.document().setModified(False)
 			return True
 	
+
 	def show_save_dialog(self):
+
+		''' Show the save dialog is there is no file_path'''
+
 		self.filename, _ = QFileDialog.getSaveFileName(self, 'Save as...')
 		if self.filename:
 			self.file_path = self.filename
@@ -168,13 +184,21 @@ class MainWindow(QMainWindow):
 			return True
 		return False
 
+
 	def ask_for_confirmation(self): 
+
+		''' Prevents leaving without saving '''
+
 		answer = QMessageBox.question(self, "Confirm closing",
 					"You have unsaved changes. Are you sure you want to exit?", 
 					QMessageBox.Save | QMessageBox.Discard | QMessageBox.Cancel)
 		return answer
 	
-	def show_open_dialog(self): 
+
+	def show_open_dialog(self):
+
+		''' Function for open files saved on your device '''
+
 		self.filename, _ = QFileDialog.getOpenFileName(self, 'Open...')
 		if self.filename:
 			file_contents = ""
@@ -183,7 +207,11 @@ class MainWindow(QMainWindow):
 			self.editor.setPlainText(file_contents)
 			self.file_path = self.filename
 
+
 	def custom_menu(self, event):
+
+		''' Custom Context Menu function with some actions '''
+
 		# Creamos el menú
 		menu = QMenu(self)
 		self.event = event
@@ -200,7 +228,13 @@ class MainWindow(QMainWindow):
 		# Abrimos el menu en la posición del cursor	
 		menu.exec_(QCursor.pos())
 
-	def menu_open_file(self):
+	def menu_open_file(self): # TODO: NO FUNCIONA
+
+		'''
+		With open the selected file on the editor if it's not a 
+		directory or a image file
+		'''
+
 		self.explorer_file_path = self.model.filePath(self.event)
 		if self.editor.document().isModified():
 			answer = self.ask_for_confirmation()

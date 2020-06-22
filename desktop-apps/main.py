@@ -6,7 +6,7 @@ from PyQt5.QtGui import QKeySequence, QTextDocument, QFont, QCursor
 from PyQt5.QtWidgets import (QDockWidget, QPlainTextEdit, QDirModel,
 							 QTreeView, QDockWidget, QFileDialog,
 							 QMainWindow, QApplication, QAction,
-							 QMessageBox, QHeaderView, QMenu, QFileSystemModel)
+							 QMessageBox, QHeaderView, QMenu, QFileSystemModel) # TODO! QDirModel?
 
 
 class MainWindow(QMainWindow):
@@ -251,7 +251,7 @@ class MainWindow(QMainWindow):
 		directory or a image file '''
 
 		# Extracting the file_path (as explorer_file_path) at the selected item
-		self.explorer_file_path = self.model.filePath(self.explorer.selectedIndexes()[0])
+		self.explorer_file_path = self.model.filePath(self.explorer.currentIndex())
 		
 		# If you try to open a directory or an image, nothing will happend
 		try:
@@ -263,7 +263,7 @@ class MainWindow(QMainWindow):
 
 	def menu_rename_file(self): # TODO: NO RULA
 		
-		self.explorer_file_path = self.model.filePath(self.explorer.selectedIndexes()[0])
+		self.explorer_file_path = self.model.filePath(self.explorer.currentIndex())
 		# self.model.setReadOnly(False) # hace que se pueda editar, pero no te lo selecciona
 		self.model.selectedIndexes().setReadOnly(False)
 
@@ -275,29 +275,11 @@ class MainWindow(QMainWindow):
 		
 		''' Delete selected file '''
 
-		self.explorer_file_path = self.model.filePath(self.explorer.selectedIndexes()[0])
-
-
-		selected_items = self.explorer.selection()
-
-		for selected_item in selected_items:
-			for i in range(len(self.tasks)):
-				if self.tasks[i].subject == self.explorer.item(selected_item)['values'][0]:
-					self.tasks.pop(i)
-					break
-			self.explorer.delete(selected_item)
-
-
-
-		# self.model.beginRemoveRows(self.model.index(self.explorer_file_path), 0, 0)
-		# self.model.remove(self.model.index(self.explorer_file_path))
-		# self.model.endRemoveRows()
-
-		# print(self.explorer.rootPath(self.model.index(self.explorer_file_path)))
-		# self.model.remove(self.explorer.selectedIndexes()[0])
-		# print(self.model.index(self.explorer_file_path).row())
-
-		# self.model.remove(self.model.index(self.explorer.selectedIndexes()))
+		index = self.explorer.currentIndex()
+		self.explorer_file_path = self.model.filePath(index)
+		self.model.beginRemoveRows(index, 0, index.row())
+		os.remove(self.explorer_file_path)
+		self.model.endRemoveRows()
 
 
 	def menu_copy_file_path(self):

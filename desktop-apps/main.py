@@ -3,10 +3,10 @@ import sys
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QKeySequence, QTextDocument, QFont, QCursor
-from PyQt5.QtWidgets import (QDockWidget, QPlainTextEdit, QDirModel,
+from PyQt5.QtWidgets import (QDockWidget, QPlainTextEdit, QFileSystemModel,
 							 QTreeView, QDockWidget, QFileDialog,
 							 QMainWindow, QApplication, QAction,
-							 QMessageBox, QHeaderView, QMenu, QFileSystemModel) # TODO! QDirModel?
+							 QMessageBox, QHeaderView, QMenu)
 
 
 class MainWindow(QMainWindow):
@@ -29,12 +29,15 @@ class MainWindow(QMainWindow):
 		self.editor.zoomIn(3)
 
 		# Creating Treeview
-		self.home = os.path.expanduser('..')
-		self.model = QFileSystemModel()
+		# self.home = os.path.expanduser('..')
+		
 		self.explorer = QTreeView()
-		self.explorer.setSortingEnabled(True) # allows to order by clicking on headers
+		self.model = QFileSystemModel(self.explorer)
+		self.root = self.model.setRootPath('..')
 		self.explorer.setModel(self.model)
-		self.explorer.setRootIndex(self.model.index(self.home))
+		self.explorer.setRootIndex(self.root)
+
+		self.explorer.setSortingEnabled(True) # allows to order by clicking on headers
 		self.explorer.setMinimumWidth(400)
 		self.explorer.setContextMenuPolicy(Qt.CustomContextMenu)
 

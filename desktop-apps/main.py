@@ -285,13 +285,6 @@ class MainWindow(QMainWindow):
 		self.explorer.edit(index)
 
 
-	def menu_rename_focus(self, index):
-
-		''' Renaming selected the gived folder or file'''
-
-		self.explorer.edit(index)
-
-
 	def menu_delete_file(self):
 		
 		''' Delete selected file or directory '''
@@ -322,17 +315,6 @@ class MainWindow(QMainWindow):
 		self.explorer_file_path = self.model.filePath(index)
 		app.clipboard().setText(self.explorer_file_path)
 
-
-	def menu_create_folder(self):
-
-		''' Create a new folder'''
-
-		index = self.explorer.currentIndex()
-		self.explorer_file_path = self.model.filePath(index)
-
-		try:
-			new_folder = self.explorer_file_path + '/new_folder'
-			os.mkdir(new_folder, 0o0777)
 	
 	def ask_for_delete_confirmation(self, filename):
 

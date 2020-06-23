@@ -1,4 +1,5 @@
 import os
+import shutil
 import sys
 
 from PyQt5.QtCore import Qt
@@ -6,7 +7,8 @@ from PyQt5.QtGui import QKeySequence, QTextDocument, QFont, QCursor
 from PyQt5.QtWidgets import (QDockWidget, QPlainTextEdit, QFileSystemModel,
 							 QTreeView, QMenu, QFileDialog, QAction,
 							 QMainWindow, QApplication, QMessageBox,
-							 QHeaderView, QAbstractItemView)
+							 QHeaderView)
+
 
 
 class MainWindow(QMainWindow):
@@ -115,20 +117,21 @@ class MainWindow(QMainWindow):
 		''' This function get the file path of the double clicked item and if it
 		meet the given requirements, open that file on the editor widget.
 
-		Attention! We must use self.explorer_file_path becouse if 
-		self.editor.document().isModified() is True, the self.ask_for_confirmation 
-		will use the self.file_path variable and when you double click, 
-		you set a value for the variable. '''
+		We must use self.explorer_file_path becouse if self.editor.document().isModified() 
+		is True, the self.ask_for_confirmation  will use the self.file_path variable 
+		and when you double click, you set a value for the variable. '''
 
 		self.explorer_file_path = self.model.filePath(index)
 
 		# If you double click on a directory or an image, nothing will happend
 		try:
 			self.open_from_explorer()
+
 		except IsADirectoryError:
-			return
+			return # default behavior
+			
 		except UnicodeDecodeError:
-			return
+			self.unicode_decode_error()
 	
 	def open_from_explorer(self):
 
@@ -225,22 +228,27 @@ class MainWindow(QMainWindow):
 		## ACTIONS
 
 		## Opening the document
-		open_action = QAction("Abrir")
+		open_action = QAction("Open")
 		open_action.triggered.connect(self.menu_open)
 		menu.addAction(open_action)
 
+		## Create new folder
+		new_folder_action = QAction("Create new folder")
+		new_folder_action.triggered.connect(self.menu_create_folder)
+		menu.addAction(new_folder_action)
+
 		## Rename file
-		rename_action = QAction("Renombrar")
-		rename_action.triggered.connect(self.menu_rename_file)
+		rename_action = QAction("Rename")
+		rename_action.triggered.connect(self.menu_rename)
 		menu.addAction(rename_action)
 
 		## Copy file path to clipboard
-		delete_action = QAction("Borrar")
+		delete_action = QAction("Delete")
 		delete_action.triggered.connect(self.menu_delete_file)
 		menu.addAction(delete_action)
 
 		## Copy file path to clipboard
-		copy_action = QAction("Copiar ruta en el portapapeles")
+		copy_action = QAction("Copy path to clipboard")
 		copy_action.triggered.connect(self.menu_copy_file_path)
 		menu.addAction(copy_action)
 
@@ -255,7 +263,7 @@ class MainWindow(QMainWindow):
 		If it's a image file, don't do nothing. 
 		If it's a directory, it expands it '''
 
-		# Extracting the file_path (as explorer_file_path) at the selected item
+		# Extracting the file_path (as explorer_file_path)
 		index = self.explorer.currentIndex()
 		self.explorer_file_path = self.model.filePath(index)
 
@@ -263,18 +271,25 @@ class MainWindow(QMainWindow):
 			self.open_from_explorer()
 
 		except IsADirectoryError:
-			self.explorer.expand(index) # Raise qdialog error
+			self.explorer.expand(index) 
 
 		except UnicodeDecodeError:
-			return
+			self.unicode_decode_error()
 
-	def menu_rename_file(self):
+
+	def menu_rename(self):
 
 		''' Renaming selected file or directory '''
-		
+
 		index = self.explorer.currentIndex()
 		self.explorer.edit(index)
 
+
+	def menu_rename_focus(self, index):
+
+		''' Renaming selected the gived folder or file'''
+
+		self.explorer.edit(index)
 
 
 	def menu_delete_file(self):
@@ -283,27 +298,63 @@ class MainWindow(QMainWindow):
 
 		index = self.explorer.currentIndex()
 		self.explorer_file_path = self.model.filePath(index)
+		filename = self.model.fileName(index)
 
 		try:
 			os.remove(self.explorer_file_path)
 
-		except IsADirectoryError:
+		except IsADirectoryError: # for empty folders
 			try:
 				os.rmdir(self.explorer_file_path)
 
-			except OSError: #TODO: IMPLEMENTAR BORRADO EN CASCADA PREVIO QDIALOG
-				print('Borra antes el fichero')
-
+			except OSError: # for remove recursively a directory
+					answer = self.ask_for_delete_confirmation(filename)
+					if answer == QMessageBox.Yes:
+						shutil.rmtree(self.explorer_file_path)
+					elif answer == QMessageBox.Cancel:
+						return
 
 	def menu_copy_file_path(self):
 
 		''' Extract the path and paste it on the clipboard '''
-
-		self.explorer_file_path = self.model.filePath(self.explorer.selectedIndexes()[0])
+		
+		index = self.explorer.currentIndex()
+		self.explorer_file_path = self.model.filePath(index)
 		app.clipboard().setText(self.explorer_file_path)
-		
 
-		
+
+	def menu_create_folder(self):
+
+		''' Create a new folder'''
+
+		index = self.explorer.currentIndex()
+		self.explorer_file_path = self.model.filePath(index)
+
+		try:
+			new_folder = self.explorer_file_path + '/new_folder'
+			os.mkdir(new_folder, 0o0777)
+	
+	def ask_for_delete_confirmation(self, filename):
+
+		''' Raise a warning popup asking for confirmation for deleting 
+		recursively a directory and all it's files '''
+
+		answer = QMessageBox.warning(self, "Confirm delete",
+				f"This folder isn't empty.\n\nAre you sure you want to delete the folder and all the files?\n\nThe folder is: '{filename}'", 
+				QMessageBox.Yes | QMessageBox.Cancel)
+
+		return answer
+
+
+	def unicode_decode_error(self):
+
+		""" Raise an information pop-up reporting that the binary file
+		can't be decoded."""
+
+		QMessageBox.information(self, "We can't open the file",
+			"The selected file is binary and cannot be decoded ", 
+			QMessageBox.Ok)
+
 
 if __name__ == '__main__':
 

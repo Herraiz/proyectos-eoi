@@ -30,7 +30,7 @@ class MainWindow(QMainWindow):
 
 		# Creating Treeview
 		self.home = os.path.expanduser('..')
-		self.model = QDirModel()
+		self.model = QFileSystemModel()
 		self.explorer = QTreeView()
 		self.explorer.setSortingEnabled(True) # allows to order by clicking on headers
 		self.explorer.setModel(self.model)

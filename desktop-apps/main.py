@@ -4,9 +4,9 @@ import sys
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QKeySequence, QTextDocument, QFont, QCursor
 from PyQt5.QtWidgets import (QDockWidget, QPlainTextEdit, QFileSystemModel,
-							 QTreeView, QDockWidget, QFileDialog,
-							 QMainWindow, QApplication, QAction,
-							 QMessageBox, QHeaderView, QMenu)
+							 QTreeView, QMenu, QFileDialog, QAction,
+							 QMainWindow, QApplication, QMessageBox,
+							 QHeaderView, QAbstractItemView)
 
 
 class MainWindow(QMainWindow):
@@ -16,12 +16,12 @@ class MainWindow(QMainWindow):
 		# setting default window size
 		self.resize(1700, 900)
 
-		# menu bar
+		# menu bar & file_path
 		self.file_menu = self.menuBar().addMenu("&File")
-		self.file_path = None # esto igual no hace falta
+		self.file_path = None
 
 		# Creating dock widget
-		dockWidget = QDockWidget('PyFileExplorer', self)
+		dockWidget = QDockWidget('Explorer', self)
 
 		# Creating editor
 		self.editor = QPlainTextEdit()
@@ -29,17 +29,20 @@ class MainWindow(QMainWindow):
 		self.editor.zoomIn(3)
 
 		# Creating Treeview
-		# self.home = os.path.expanduser('..')
-		
 		self.explorer = QTreeView()
 		self.model = QFileSystemModel(self.explorer)
 		self.root = self.model.setRootPath('..')
 		self.explorer.setModel(self.model)
 		self.explorer.setRootIndex(self.root)
 
+		# Other custom tweaks
 		self.explorer.setSortingEnabled(True) # allows to order by clicking on headers
-		self.explorer.setMinimumWidth(400)
-		self.explorer.setContextMenuPolicy(Qt.CustomContextMenu)
+		self.explorer.setMinimumWidth(400) # tweaking the explorer size
+		self.explorer.setContextMenuPolicy(Qt.CustomContextMenu) # enable context menu
+
+		# Enabling renaming on context menu
+		self.model.setReadOnly(False) 
+		self.explorer.setEditTriggers(self.explorer.NoEditTriggers)
 
 		# Change default column width
 		self.header = self.explorer.header()
@@ -211,78 +214,85 @@ class MainWindow(QMainWindow):
 			self.file_path = self.filename
 
 
-	def custom_menu(self, event):
+	def custom_menu(self, point):
 
 		''' Custom Context Menu function with some actions '''
 
 		# Creating the context menu
 		menu = QMenu(self)
 
-		self.event = event # TODO: Guardamos el event a ver si hace falta
 
-		##ACTIONS
+		## ACTIONS
 
 		## Opening the document
-		open_action = QAction("&Abrir fichero")
-		open_action.triggered.connect(self.menu_open_file)
+		open_action = QAction("Abrir")
+		open_action.triggered.connect(self.menu_open)
 		menu.addAction(open_action)
 
 		## Rename file
-		rename_action = QAction("&Renombrar")
+		rename_action = QAction("Renombrar")
 		rename_action.triggered.connect(self.menu_rename_file)
 		menu.addAction(rename_action)
 
 		## Copy file path to clipboard
-		copy_action = QAction("&Copiar ruta en el portapapeles")
-		copy_action.triggered.connect(self.menu_copy_file_path)
-		menu.addAction(copy_action)
-
-		## Copy file path to clipboard
-		delete_action = QAction("&Borrar")
+		delete_action = QAction("Borrar")
 		delete_action.triggered.connect(self.menu_delete_file)
 		menu.addAction(delete_action)
 
+		## Copy file path to clipboard
+		copy_action = QAction("Copiar ruta en el portapapeles")
+		copy_action.triggered.connect(self.menu_copy_file_path)
+		menu.addAction(copy_action)
 
 		# Opening the context menu at the cursor position
 		menu.exec_(QCursor.pos())
+		
 
 
+	def menu_open(self):
 
-	def menu_open_file(self):
-
-		''' With open the selected file on the editor if it's not a 
-		directory or a image file '''
+		''' Open the selected file on the editor.
+		If it's a image file, don't do nothing. 
+		If it's a directory, it expands it '''
 
 		# Extracting the file_path (as explorer_file_path) at the selected item
-		self.explorer_file_path = self.model.filePath(self.explorer.currentIndex())
-		
-		# If you try to open a directory or an image, nothing will happend
+		index = self.explorer.currentIndex()
+		self.explorer_file_path = self.model.filePath(index)
+
 		try:
 			self.open_from_explorer()
+
 		except IsADirectoryError:
-			return
+			self.explorer.expand(index) # Raise qdialog error
+
 		except UnicodeDecodeError:
 			return
 
-	def menu_rename_file(self): # TODO: NO RULA
-		
-		self.explorer_file_path = self.model.filePath(self.explorer.currentIndex())
-		# self.model.setReadOnly(False) # hace que se pueda editar, pero no te lo selecciona
-		self.model.selectedIndexes().setReadOnly(False)
+	def menu_rename_file(self):
 
-		# self.root = self.fileSystemModel.setRootPath('.')
-		# self.explorer.setModel(fileSystemModel)
-		# self.explorer.setRootIndex(root)
-
-	def menu_delete_file(self): # TODO: no rula
+		''' Renaming selected file or directory '''
 		
-		''' Delete selected file '''
+		index = self.explorer.currentIndex()
+		self.explorer.edit(index)
+
+
+
+	def menu_delete_file(self):
+		
+		''' Delete selected file or directory '''
 
 		index = self.explorer.currentIndex()
 		self.explorer_file_path = self.model.filePath(index)
-		self.model.beginRemoveRows(index, 0, index.row())
-		os.remove(self.explorer_file_path)
-		self.model.endRemoveRows()
+
+		try:
+			os.remove(self.explorer_file_path)
+
+		except IsADirectoryError:
+			try:
+				os.rmdir(self.explorer_file_path)
+
+			except OSError: #TODO: IMPLEMENTAR BORRADO EN CASCADA PREVIO QDIALOG
+				print('Borra antes el fichero')
 
 
 	def menu_copy_file_path(self):

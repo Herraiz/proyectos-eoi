@@ -73,7 +73,8 @@ class MainWindow(QMainWindow):
 
 		self.explorer.customContextMenuRequested.connect(self.custom_menu)
 
-		## MENU BAR
+		## MENU BAR: FILE MENU
+
 
 		### New document
 		self.new_action = QAction("&New document")
@@ -98,6 +99,7 @@ class MainWindow(QMainWindow):
 		self.close_action.triggered.connect(self.close)
 		self.close_action.setShortcut(QKeySequence.Quit)
 		self.file_menu.addAction(self.close_action)
+
 
 	def closeEvent(self, e):
 
@@ -231,11 +233,6 @@ class MainWindow(QMainWindow):
 		open_action = QAction("Open")
 		open_action.triggered.connect(self.menu_open)
 		menu.addAction(open_action)
-
-		## Create new folder
-		new_folder_action = QAction("Create new folder")
-		new_folder_action.triggered.connect(self.menu_create_folder)
-		menu.addAction(new_folder_action)
 
 		## Rename file
 		rename_action = QAction("Rename")

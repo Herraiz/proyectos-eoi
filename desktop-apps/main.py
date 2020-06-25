@@ -16,7 +16,7 @@ class MainWindow(QMainWindow):
 		super().__init__()
 
 		# setting default window size
-		self.resize(1700, 900)
+		self.resize(1500, 900)
 
 		# menu bar & file_path
 		self.file_menu = self.menuBar().addMenu("&File")
@@ -28,7 +28,7 @@ class MainWindow(QMainWindow):
 		# Creating editor
 		self.editor = QPlainTextEdit()
 		self.editor.document().setDefaultFont(QFont("monospace"))
-		self.editor.zoomIn(3)
+		self.editor.zoomIn(2)
 
 		# Creating Treeview
 		self.explorer = QTreeView()
@@ -75,7 +75,6 @@ class MainWindow(QMainWindow):
 
 		## MENU BAR: FILE MENU
 
-
 		### New document
 		self.new_action = QAction("&New document")
 		self.new_action.triggered.connect(self.new_document)
@@ -100,6 +99,23 @@ class MainWindow(QMainWindow):
 		self.close_action.setShortcut(QKeySequence.Quit)
 		self.file_menu.addAction(self.close_action)
 
+		## MENU BAR: HELP MENU
+
+		### About
+
+		self.help_menu = self.menuBar().addMenu("&Help")
+		self.about_action = QAction("&About")
+		self.about_action.triggered.connect(self.show_about_dialog)
+		self.help_menu.addAction(self.about_action)
+
+
+	def show_about_dialog(self):
+		text = """
+			<center> <h1>PyFileBrowser</h1></center>
+			<p>Version 1.0.0</p>
+			<p>Created by <a href="https://twiter.com/RoberHerraiz">@RoberHerraiz</a>.</p>
+		"""
+		QMessageBox.about(self, "PyFileBrowser", text)
 
 	def closeEvent(self, e):
 
@@ -116,10 +132,10 @@ class MainWindow(QMainWindow):
 	
 	def on_double_click(self, index):
 
-		''' This function get the file path of the double clicked item and if it
+		''' Get the file path of the double clicked item and if it
 		meet the given requirements, open that file on the editor widget.
 
-		We must use self.explorer_file_path becouse if self.editor.document().isModified() 
+		We must use self.explorer_file_path because if self.editor.document().isModified() 
 		is True, the self.ask_for_confirmation  will use the self.file_path variable 
 		and when you double click, you set a value for the variable. '''
 

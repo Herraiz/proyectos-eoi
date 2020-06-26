@@ -130,7 +130,7 @@ class MainWindow(QMainWindow):
 		elif answer == QMessageBox.Cancel:
 			e.ignore()
 	
-	def on_double_click(self, index):
+	def on_double_click(self, index): # TODO! not working
 
 		''' Get the file path of the double clicked item and if it
 		meet the given requirements, open that file on the editor widget.

@@ -5,47 +5,43 @@ from PyQt5.QtGui import QCursor
 from PyQt5.QtWidgets import QMenu, QAction, QMessageBox
 
 from messages import Message
+from menu import Menu
+
 
 
 class Custom_menu(QMenu):
 
-    def __init__(self, main, explorer, model, app):
+    def __init__(self, main, explorer, model, editor, app):
         super().__init__()
         self.explorer = explorer
         self.model = model
         self.main = main
+        self.editor = editor
         self.app = app
         self.message = Message()
+        self.menu = Menu(self.main, self.explorer, self.editor, self.model, self)
 
 
-    def menu(self, point):
+    def context_menu(self, point):
 
         ''' Custom Context Menu function with some actions '''
 
-
-        ## ACTIONS
-
-        ## Opening the document
         open_action = QAction("Open")
         open_action.triggered.connect(self.menu_open)
         self.addAction(open_action)
 
-        ## Rename file
         rename_action = QAction("Rename")
         rename_action.triggered.connect(self.menu_rename)
         self.addAction(rename_action)
 
-        ## Copy file path to clipboard
         delete_action = QAction("Delete")
         delete_action.triggered.connect(self.menu_delete_file)
         self.addAction(delete_action)
 
-        ## Copy file path to clipboard
         copy_action = QAction("Copy path to clipboard")
         copy_action.triggered.connect(self.menu_copy_file_path)
         self.addAction(copy_action)
 
-        # Opening the context menu at the cursor position
         self.exec_(QCursor.pos())
 
 
@@ -108,15 +104,15 @@ class Custom_menu(QMenu):
         self.app.clipboard().setText(self.explorer_file_path)
 
 
-    def open_from_explorer(self):
+    def open_from_explorer(self, index):
 
         ''' This function open the file on the current self.file_path in the editor '''
         
-        self.main.safe_close()
+        self.menu.safe_close()
         file_contents = ""
-        # self.explorer_file_path = self.file_path
+        self.explorer_file_path = index
         with open(self.explorer_file_path, 'r') as f:
             file_contents = f.read()
-        self.main.editor.setPlainText(file_contents)
+        self.editor.setPlainText(file_contents)
         # We save the file_path again so that self.save() works correctly	
-        self.file_path = self.explorer_file_path 
+        self.main.file_path = self.explorer_file_path 

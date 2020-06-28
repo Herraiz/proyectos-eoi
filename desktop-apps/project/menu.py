@@ -1,44 +1,49 @@
 
 from PyQt5.QtGui import QCursor, QKeySequence
-from PyQt5.QtWidgets import QMenu, QAction, QMessageBox
+from PyQt5.QtWidgets import QMenu, QAction, QMessageBox, QFileDialog
 
 from messages import Message
 
 class Menu(QMenu):
 
-    def __init__(self, main, explorer, editor):
+    def __init__(self, main, explorer, editor, model, custom_menu):
         super().__init__()
         self.explorer = explorer
         self.editor = editor
+        self.model = model
         self.main = main
         self.message = Message()
+        self.custom_menu = custom_menu
         self.file_menu = self.main.menuBar().addMenu("&File")
         self.help_menu = self.main.menuBar().addMenu("&Help")
+        self.menu_actions()
+
+    def menu_actions(self):
 
         self.new_action = QAction("&New document")
         self.new_action.triggered.connect(self.new_document)
         self.new_action.setShortcut(QKeySequence.New)
         self.file_menu.addAction(self.new_action)
 
-        # self.file_menu.addAction(self.open_action)
-        # self.file_menu.addAction(self.save_action)
-        # self.file_menu.addAction(self.close_action)
-        # self.help_menu.addAction(self.about_action)
-            
+        self.open_action = QAction("&Open file...")
+        self.open_action.triggered.connect(self.show_open_dialog)
+        self.open_action.setShortcut(QKeySequence.Open)
+        self.file_menu.addAction(self.open_action)       
 
-    def closeEvent(self, e):
+        self.save_action = QAction("&Save")
+        self.save_action.triggered.connect(self.save)
+        self.save_action.setShortcut(QKeySequence.Save)
+        self.file_menu.addAction(self.save_action)
 
-        '''This function prevents from closing without saving,
-            it works with the "Close" event'''
+        self.close_action = QAction("&Close")
+        self.close_action.triggered.connect(self.main.close)
+        self.close_action.setShortcut(QKeySequence.Quit)
+        self.file_menu.addAction(self.close_action)
 
-        if not self.editor.document().isModified():
-            return
-        answer = self.message.ask_for_confirmation()
-        if answer == QMessageBox.Save:
-            if not self.save():
-                e.ignore()
-        elif answer == QMessageBox.Cancel:
-            e.ignore()
+        self.about_action = QAction("&About")
+        self.about_action.triggered.connect(self.message.show_about_dialog)
+        self.help_menu.addAction(self.about_action)       
+
 
     def on_double_click(self, index): # TODO! not working
 
@@ -53,7 +58,7 @@ class Menu(QMenu):
 
         # If you double click on a directory or an image, nothing will happend
         try:
-            self.open_from_explorer()
+            self.custom_menu.open_from_explorer(self.explorer_file_path)
 
         except IsADirectoryError:
             return # default behavior

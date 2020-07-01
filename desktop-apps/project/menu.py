@@ -41,8 +41,7 @@ class Menu(QMenu):
 
         self.about_action = QAction("&About")
         self.about_action.triggered.connect(self.message.show_about_dialog)
-        self.main.help_menu.addAction(self.about_action)
-
+        self.main.help_menu.addAction(self.about_action) 
 
     def new_document(self):
 

@@ -14,8 +14,7 @@ class Custom_menu(QMenu):
 
     def __init__(self, main, model, editor, app):
         super().__init__()
-        self.menu = Menu(main, editor, model)
-        self.explorer = Explorer()
+        self.explorer = explorer
         self.model = model
         self.main = main
         self.editor = editor

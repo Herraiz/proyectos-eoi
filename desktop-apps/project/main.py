@@ -3,7 +3,7 @@ import sys
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QKeySequence, QTextDocument, QFont
 from PyQt5.QtWidgets import (QDockWidget, QPlainTextEdit, QFileSystemModel,
-							 QTreeView, QFileDialog, QMainWindow, QAction,
+							 QTreeView, QMainWindow,
 							 QApplication, QMessageBox, QHeaderView)
 							 
 
@@ -73,8 +73,7 @@ class MainWindow(QMainWindow):
 		self.explorer.customContextMenuRequested.connect(self.custom_menu.context_menu)
 
 
-
-	def closeEvent(self, e):
+	def closeEvent(self, e): #TODO: Sacar closeevent y quitar menu, no hace falta.
 
 		'''This function prevents from closing without saving,
 		 it works with the "Close" event'''

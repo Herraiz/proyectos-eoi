@@ -3,9 +3,9 @@ import sys
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QKeySequence, QTextDocument, QFont
 from PyQt5.QtWidgets import (QDockWidget, QPlainTextEdit, QFileSystemModel,
-							 QTreeView, QFileDialog, QAction,
-							 QMainWindow, QApplication, QMessageBox,
-							 QHeaderView)
+							 QTreeView, QFileDialog, QMainWindow, QAction,
+							 QApplication, QMessageBox, QHeaderView)
+							 
 
 
 from custom_menu import Custom_menu
@@ -61,14 +61,43 @@ class MainWindow(QMainWindow):
 		dockWidget.setWidget(self.explorer)
 		dockWidget.setFloating(False)
 
+		# Menu bar
+		self.file_menu = self.menuBar().addMenu("&File")
+		self.help_menu = self.menuBar().addMenu("&Help")
+
 		### Double click
-		self.explorer.doubleClicked.connect(self.menu.on_double_click)
+		self.explorer.doubleClicked.connect(self.custom_menu.on_double_click)
 
 		### Right click
-
 		self.explorer.customContextMenuRequested.connect(self.custom_menu.context_menu)
 
+		self.menu_actions()
 
+	def menu_actions(self):
+
+		self.new_action = QAction("&New document")
+		self.new_action.triggered.connect(self.menu.new_document)
+		self.new_action.setShortcut(QKeySequence.New)
+		self.file_menu.addAction(self.new_action)
+
+		self.open_action = QAction("&Open file...")
+		self.open_action.triggered.connect(self.menu.show_open_dialog)
+		self.open_action.setShortcut(QKeySequence.Open)
+		self.file_menu.addAction(self.open_action)       
+
+		self.save_action = QAction("&Save")
+		self.save_action.triggered.connect(self.menu.save)
+		self.save_action.setShortcut(QKeySequence.Save)
+		self.file_menu.addAction(self.save_action)
+
+		self.close_action = QAction("&Close")
+		self.close_action.triggered.connect(self.close)
+		self.close_action.setShortcut(QKeySequence.Quit)
+		self.file_menu.addAction(self.close_action)
+
+		self.about_action = QAction("&About")
+		self.about_action.triggered.connect(self.message.show_about_dialog)
+		self.help_menu.addAction(self.about_action) 
 
 	def closeEvent(self, e):
 
@@ -83,7 +112,6 @@ class MainWindow(QMainWindow):
 				e.ignore()
 		elif answer == QMessageBox.Cancel:
 			e.ignore()
-
 
 
 if __name__ == '__main__':

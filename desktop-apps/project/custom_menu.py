@@ -20,6 +20,8 @@ class Custom_menu(QMenu):
         self.app = app
         self.message = Message()
         self.menu = Menu(self.main, self.explorer, self.editor, self.model, self)
+        self.index = None
+        self.index_path = None
 
 
     def context_menu(self, point):
@@ -45,21 +47,36 @@ class Custom_menu(QMenu):
         self.exec_(QCursor.pos())
 
 
-    def menu_open(self):
+    def on_double_click(self, index):
 
-        ''' Open the selected file on the editor.
-        If it's a image file, don't do nothing. 
-        If it's a directory, it expands it '''
+        ''' Get the file path of the double clicked item and if it
+        meet the given requirements, open that file on the editor widget '''
 
-        # Extracting the file_path (as explorer_file_path)
-        index = self.explorer.currentIndex()
-        self.explorer_file_path = self.model.filePath(index)
+        self.index = index
+        self.index_path = self.model.filePath(index)
 
         try:
-            self.open_from_explorer()
+            self.open_from_explorer(self.index_path)
 
         except IsADirectoryError:
-            self.explorer.expand(index) 
+            return # default behavior
+            
+        except UnicodeDecodeError:
+            self.message.unicode_decode_error()
+
+    def menu_open(self):
+
+        ''' Open the selected file on the editor '''
+
+        # Extracting the file_path (as explorer_file_path)
+        self.index = self.explorer.currentIndex()
+        self.index_path = self.model.filePath(self.index)
+
+        try:
+            self.open_from_explorer(self.index_path)
+
+        except IsADirectoryError:
+            self.explorer.expand(self.index) 
 
         except UnicodeDecodeError:
             self.message.unicode_decode_error()
@@ -69,29 +86,29 @@ class Custom_menu(QMenu):
 
         ''' Renaming selected file or directory '''
 
-        index = self.explorer.currentIndex()
-        self.explorer.edit(index)
+        self.index = self.explorer.currentIndex()
+        self.explorer.edit(self.index)
 
 
     def menu_delete_file(self):
         
         ''' Delete selected file or directory '''
 
-        index = self.explorer.currentIndex()
-        self.explorer_file_path = self.model.filePath(index)
-        filename = self.model.fileName(index)
+        self.index = self.explorer.currentIndex()
+        self.index_path = self.model.filePath(self.index)
+        filename = self.model.fileName(self.index)
 
         try:
-            os.remove(self.explorer_file_path)
+            os.remove(self.index_path)
 
         except IsADirectoryError: # for empty folders
             try:
-                os.rmdir(self.explorer_file_path)
+                os.rmdir(self.index_path)
 
             except OSError: # for remove recursively a directory
                     answer = self.message.ask_for_delete_confirmation(filename)
                     if answer == QMessageBox.Yes:
-                        shutil.rmtree(self.explorer_file_path)
+                        shutil.rmtree(self.index_path)
                     elif answer == QMessageBox.Cancel:
                         return
 
@@ -99,20 +116,20 @@ class Custom_menu(QMenu):
 
         ''' Extract the path and paste it on the clipboard '''
         
-        index = self.explorer.currentIndex()
-        self.explorer_file_path = self.model.filePath(index)
-        self.app.clipboard().setText(self.explorer_file_path)
+        self.index = self.explorer.currentIndex()
+        self.index_path = self.model.filePath(self.index)
+        self.app.clipboard().setText(self.index_path)
 
 
-    def open_from_explorer(self, index):
+    def open_from_explorer(self, path):
 
-        ''' This function open the file on the current self.file_path in the editor '''
+        ''' This function open the file at the given path on the editor '''
         
         self.menu.safe_close()
         file_contents = ""
-        self.explorer_file_path = index
-        with open(self.explorer_file_path, 'r') as f:
+        with open(path, 'r') as f:
             file_contents = f.read()
         self.editor.setPlainText(file_contents)
-        # We save the file_path again so that self.save() works correctly	
-        self.main.file_path = self.explorer_file_path 
+
+        # We save the file_path again so that save() works correctly	
+        self.main.file_path = path 

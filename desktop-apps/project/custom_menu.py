@@ -19,7 +19,6 @@ class Custom_menu(QMenu):
         self.editor = editor
         self.app = app
         self.message = Message()
-        self.menu = Menu(self.main, self.explorer, self.editor, self.model, self)
         self.index = None
         self.index_path = None
 

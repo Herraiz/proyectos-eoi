@@ -6,14 +6,41 @@ from messages import Message
 
 class Menu(QMenu):
 
-    def __init__(self, main, explorer, editor, model, custom_menu):
+    def __init__(self, main, explorer, editor, model):
         super().__init__()
         self.explorer = explorer
         self.editor = editor
         self.model = model
         self.main = main
         self.message = Message()
-        self.custom_menu = custom_menu
+
+        self.menu_actions()
+
+    def menu_actions(self):
+
+        self.new_action = QAction("&New document")
+        self.new_action.triggered.connect(self.new_document)
+        self.new_action.setShortcut(QKeySequence.New)
+        self.main.file_menu.addAction(self.new_action)
+
+        self.open_action = QAction("&Open file...")
+        self.open_action.triggered.connect(self.show_open_dialog)
+        self.open_action.setShortcut(QKeySequence.Open)
+        self.main.file_menu.addAction(self.open_action)       
+
+        self.save_action = QAction("&Save")
+        self.save_action.triggered.connect(self.save)
+        self.save_action.setShortcut(QKeySequence.Save)
+        self.main.file_menu.addAction(self.save_action)
+
+        self.close_action = QAction("&Close")
+        self.close_action.triggered.connect(self.main.close)
+        self.close_action.setShortcut(QKeySequence.Quit)
+        self.main.file_menu.addAction(self.close_action)
+
+        self.about_action = QAction("&About")
+        self.about_action.triggered.connect(self.message.show_about_dialog)
+        self.main.help_menu.addAction(self.about_action) 
 
     def new_document(self):
 

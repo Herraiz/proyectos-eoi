@@ -102,6 +102,12 @@ class Map():
             if self.map_data[y][x] == "0":
                 return (x, y)
 
+    def create_empty_square(self, x, y):
+        neighbour_deltas = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+        for i in neighbour_deltas:
+            ix, iy = i
+            self.map_data[iy][ix] = "0"
+
     def create_sprites_from_map_data(self, game):
         for row, tiles in enumerate(self.map_data):
             for col, tile in enumerate(tiles):

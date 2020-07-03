@@ -17,7 +17,7 @@ class Game:
 
         self.data = Data()
         self.playing = False
-        self.load_data()
+        self.main_menu()
 
     def load_data(self):
         self.all_sprites = pygame.sprite.Group()
@@ -45,6 +45,7 @@ class Game:
         for _ in range(3):
             x, y = self.map.get_empty_position()
             self.map.map_data[y][x] = "B"
+            # self.map.create_empty_square(y, x)
 
         x, y = self.map.get_empty_position()
         self.map.map_data[y][x] = "P"
@@ -59,6 +60,7 @@ class Game:
         self.map.map_data[y][x] = "T"
 
     def start_game(self):
+        self.load_data()
         self.run()
 
     def run(self):
@@ -77,6 +79,15 @@ class Game:
 
     def update(self):
         self.all_sprites.update()
+
+        if len(self.mobs) == 0:
+            pygame.time
+            pygame.time.delay(1000)
+            self.start_game()
+
+
+        if len(self.players) == 0:
+            print('You lose!')
 
     def draw(self):
         self.screen.fill(GROUND)
@@ -123,5 +134,35 @@ class Game:
         pygame.draw.rect(self.screen, BLUE, health_fill)
 
 
+    def main_menu(self):
+            title_text = self.large_font.render('MOUNTAIN PEW', True, YELLOW)
+            instructions_text = self.small_font.render("Press any key to START", True, WHITE)
+
+            self.screen.fill(DARKGREY)
+            self.screen.blit(title_text,
+                            (WIDTH // 2 - title_text.get_rect().width // 2,
+                            HEIGHT // 2  - title_text.get_rect().height // 2))
+
+            self.screen.blit(instructions_text,
+                            (WIDTH // 2 - instructions_text.get_rect().width // 2,
+                            HEIGHT - 64))
+
+
+            pygame.display.flip()
+            # pygame.time.delay(1000)
+
+            in_main_menu = True
+
+            while in_main_menu:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                        quit()
+                    if event.type == pygame.KEYDOWN:
+                        in_main_menu = False
+                        self.start_game()
+                        # pygame.time.delay(500)
+
+
 game = Game()
-game.start_game()
+game.main_menu()

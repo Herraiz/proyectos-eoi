@@ -100,6 +100,9 @@ class Mob(pygame.sprite.Sprite):
             self.velocity.y = 0
             self.rect.y = self.position.y
 
+        if self.position.x == hits[0].rect.center: #TODO: Comprobar que funciona si no hay más bichos
+            self.kill()
+
     def receive_damage(self, damage):
         self.health -= damage
         if self.health <= 0:

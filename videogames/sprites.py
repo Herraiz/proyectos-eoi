@@ -9,7 +9,7 @@ from data import Data
 
 
 class Wall(pygame.sprite.Sprite):
-    def __init__(self, game, x, y):
+    def __init__(self, game, x, y, image):
         self.groups = game.all_sprites, game.walls
         pygame.sprite.Sprite.__init__(self, self.groups)
         self.game = game
@@ -21,85 +21,18 @@ class Wall(pygame.sprite.Sprite):
         self.rect.x = x * TILESIZE
         self.rect.y = y * TILESIZE
 
-class Ground(pygame.sprite.Sprite):
-    def __init__(self, game, x, y):
-        self.groups = game.all_sprites, game.ground
+
+class Floor(pygame.sprite.Sprite):
+    def __init__(self, game, x, y, image):
+        self.groups = game.all_sprites, game.floor
         pygame.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pygame.Surface((TILESIZE, TILESIZE))
-        self.image.fill(GROUND)
+        self.image = image
         self.rect = self.image.get_rect()
         self.x = x
         self.y = y
         self.rect.x = x * TILESIZE
         self.rect.y = y * TILESIZE
-
-
-# class Player(pygame.sprite.Sprite):
-#     def __init__(self, game, position):
-#         self.groups = game.all_sprites
-#         pygame.sprite.Sprite.__init__(self, self.groups)
-#         self.game = game
-#         self.data = Data()
-#         self.image = pygame.Surface((TILESIZE, TILESIZE))
-#         self.image.fill(YELLOW)
-#         self.rect = self.image.get_rect()
-#         self.position = position * TILESIZE
-#         self.desired_velocity = Vector2(0, 0)
-#         self.velocity = Vector2(0, 0)
-
-#     def update(self):
-#         self.handle_input()
-
-#         self.velocity -= self.velocity * DRAG * self.game.dt
-#         self.velocity += self.desired_velocity * PLAYER_ACCELERATION * self.game.dt
-#         if self.velocity.magnitude() > PLAYER_MAX_SPEED:
-#             self.velocity.scale_to_length(PLAYER_MAX_SPEED)
-
-#         self.position += self.velocity * self.game.dt
-
-#         self.rect.x = self.position.x
-#         self.collide_with_walls('x')
-#         self.rect.y = self.position.y
-#         self.collide_with_walls('y')
-
-#     def handle_input(self):
-#         vx, vy = 0, 0
-#         key = pygame.key.get_pressed()
-#         if key[pygame.K_a]:
-#             vx = -1
-#         if key[pygame.K_d]:
-#             vx = 1
-#         if key[pygame.K_w]:
-#             vy = -1
-#         if key[pygame.K_s]:
-#             vy = 1
-
-#         self.desired_velocity = Vector2(vx, vy)
-#         if self.desired_velocity.magnitude() > 0:
-#             # para movernos bien en diagonal
-#             self.desired_velocity = self.desired_velocity.normalize()
-
-#     def collide_with_walls(self, dir):
-#         hits = pygame.sprite.spritecollide(self, self.game.walls, False)
-#         if len(hits) == 0:
-#             return
-
-#         if dir == 'x':
-#             if self.velocity.x > 0:
-#                 self.position.x = hits[0].rect.left - self.rect.width
-#             if self.velocity.x < 0:
-#                 self.position.x = hits[0].rect.right
-#             self.velocity.x = 0
-#             self.rect.x = self.position.x
-
-#         if dir == 'y':
-#             if self.velocity.y > 0:
-#                 self.position.y = hits[0].rect.top - self.rect.height
-#             if self.velocity.y < 0:
-#                 self.position.y = hits[0].rect.bottom
-#             self.velocity.y = 0
-#             self.rect.y = self.position.y
 
 
 class Mob(pygame.sprite.Sprite):
@@ -124,7 +57,7 @@ class Mob(pygame.sprite.Sprite):
         self.max_health = max_health
         self.health = max_health
 
-        self.last_shot_time = 0 #TODO: ESTO IRÁ EN LA CLASS WEAPON FUTURA
+        self.last_shot_time = 0  # TODO: ESTO IRÁ EN LA CLASS WEAPON FUTURA
 
     def update(self):
         pass
@@ -215,6 +148,7 @@ class Mob(pygame.sprite.Sprite):
             # self.data.gun_sound.play() # TODO: SOUND
         self.last_shot_time = pygame.time.get_ticks()
 
+
 class Player(Mob):
     def __init__(self, game, position, max_speed,
                  acceleration, max_health, image):
@@ -222,10 +156,8 @@ class Player(Mob):
         super().__init__(game, (game.all_sprites, game.players), position,
                          max_speed, acceleration, max_health, image)
 
-
         self.max_speed = max_speed
-        self.weapon_name = 'SHOTGUN'
-        
+        self.weapon_name = 'DEAGLE'
 
     def update(self):
         self.handle_input()
@@ -306,20 +238,22 @@ class BeeNest(Mob):
                 )
             self.last_spawn_time = pygame.time.get_ticks()
 
+
 class Tower(Mob):
     def __init__(self, game, position, image):
         max_health = MOBS['TOWER']['HEALTH']
         super().__init__(game, (game.all_sprites, game.mobs),
-                    position, 0, 0, max_health, image)
+                         position, 0, 0, max_health, image)
 
         self.weapon_name = MOBS['TOWER']['WEAPON_NAME']
-        
+
     def update(self):
         towards_player = self.game.player.position - self.position
         target = self.game.player.position
 
         if 0 < towards_player.magnitude() < 200:     # TODO: VISION RADIUS, RANGE
             self.shoot_at(target.x, target.y, self.game.players)
+
 
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, game, position, velocity,
@@ -375,18 +309,19 @@ class Item(pygame.sprite.Sprite):
         self.kind = kind
 
     def update(self):
-        self.rect.top = self.position.y + math.sin(pygame.time.get_ticks() * 
-                            ITEM_HOVER_SPEED) * TILESIZE // 2
+        self.rect.top = self.position.y + math.sin(pygame.time.get_ticks() *
+                                                   ITEM_HOVER_SPEED) * TILESIZE // 2
         if pygame.sprite.collide_rect(self, self.game.player):
             self.picked_by(self.game.player)
 
     def picked_by(self, picker):
         pass
 
+
 class HealthPack(Item):
     def __init__(self, game, position):
         super().__init__(
-            game, 
+            game,
             position,
             'HEALTHPACK'
         )
@@ -398,10 +333,11 @@ class HealthPack(Item):
             picker.health = min(picker.health + heal, picker.max_health)
             self.kill()
 
+
 class SpeedUp(Item):
     def __init__(self, game, position):
         super().__init__(
-            game, 
+            game,
             position,
             'SPEEDUP'
         )
@@ -416,7 +352,7 @@ class SpeedUp(Item):
 
         speed_up = ITEMS[self.kind]['SPEED']
         picker.max_speed += speed_up
-        
+
         ttl = ITEMS[self.kind]['TTL']
         self.stop_working_at = pygame.time.get_ticks() + ttl
         self.rect.x = -10000000

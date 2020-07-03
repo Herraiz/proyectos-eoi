@@ -22,7 +22,7 @@ class Game:
     def load_data(self):
         self.all_sprites = pygame.sprite.Group()
         self.walls = pygame.sprite.Group()
-        self.ground = pygame.sprite.Group()
+        self.floor = pygame.sprite.Group()
         self.bullets = pygame.sprite.Group()
         self.mobs = pygame.sprite.Group()
         self.nests = pygame.sprite.Group()
@@ -84,7 +84,7 @@ class Game:
         # self.all_sprites.draw(self.screen)
 
         # Draw order:
-        self.ground.draw(self.screen)
+        self.floor.draw(self.screen)
         self.walls.draw(self.screen)
         self.mobs.draw(self.screen)
         self.items.draw(self.screen)

@@ -10,12 +10,12 @@ YELLOW = (200, 200, 100)
 ORANGE = (200, 150, 100)
 DARKORANGE = (100, 75, 50)
 PURPLE = (182, 56, 157)
-GROUND = (66, 40, 53)
-WALL = (48, 29, 39)
+GROUND = (201, 152, 105)
+WALL = (49, 36, 26)
 
 # game settings
-WIDTH = 1440
-HEIGHT = 900
+WIDTH = 1428
+HEIGHT = 882
 FPS = 60
 GAME_TITLE = "Pew Pew Pew"
 
@@ -124,9 +124,9 @@ WEAPONS = {
         'FX': "kaboom.wav"
     },
         'DEAGLE': {
-        'FIRING_RATE': 1000,
+        'FIRING_RATE': 100,
         'SPREAD': 0.1,
-        'TTL':  1000,
+        'TTL':  2000,
         'SPEED': 300,
         'DAMAGE': 25,
         'COLOR': RED,
@@ -136,5 +136,5 @@ WEAPONS = {
     },
 }
 
-
-
+FLOOR_SPRITE =  (7, 23)
+WALL_SPRITE = (2, 3)

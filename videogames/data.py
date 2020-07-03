@@ -77,6 +77,23 @@ class Data():
             KEY_COLOR
         )
 
+        # Floor and walls
+        self.floor_img = sprites.image_at(
+                    FLOOR_SPRITE[0],
+                    FLOOR_SPRITE[1],
+                    TILESIZE,
+                    2,
+                    KEY_COLOR
+        )
+
+        self.wall_img = sprites.image_at(
+                    WALL_SPRITE[0],
+                    WALL_SPRITE[1],
+                    TILESIZE,
+                    2,
+                    KEY_COLOR
+        )
+
     def load_fx(self):
 
         self.walk_fx = []

@@ -92,7 +92,7 @@ class Map():
                 tmp_map[int(diggers[i].y)][int(diggers[i].x)] = "0"
 
             self.map_data = tmp_map.copy()
-        # self.smooth_map(5, width, height)
+        # self.smooth_map(2, width, height)
 
     def get_empty_position(self):
         is_empty = False
@@ -106,10 +106,10 @@ class Map():
         for row, tiles in enumerate(self.map_data):
             for col, tile in enumerate(tiles):
                 position = Vector2(col, row) * TILESIZE
-                if tile == "0":
-                    Ground(game, col, row)
+                # if tile == "0":
+                #     Floor(game, col, row, self.data.floor_img)
                 if tile == '1':
-                    Wall(game, col, row)
+                    Wall(game, col, row, self.data.wall_img)
                 if tile == 'P':
                     self.player_entry_point = position
                 if tile == "b":

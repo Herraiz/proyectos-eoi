@@ -1,13 +1,18 @@
-from sprites import *
-from os import path
-from pygame import Vector2
-from settings import *
 import random
+from os import path
+
+from pygame import Vector2
+
+
+from sprites import *
+from settings import *
+from data import Data
 
 
 class Map():
     def __init__(self):
         self.map_data = []
+        self.data = Data()
         self.player_entry_point = Vector2(0, 0)
 
     def load_from_file(self, filename):
@@ -115,7 +120,7 @@ class Map():
                         BEE_ACCELERATION,
                         BEE_HEALTH,
                         BEE_HIT_DAMAGE,
-                        ORANGE
+                        self.data.bee_img
                     )
 
                 if tile == "B":
@@ -125,7 +130,7 @@ class Map():
                         BEE_NEST_HEALTH,
                         BEE_NEST_SPAWN_FREQUENCY,
                         BEE_NEST_MAX_POPULATION,
-                        DARKORANGE
+                        self.data.bee_nest_img
                     )
 
                 if tile == "h":
@@ -143,5 +148,6 @@ class Map():
                 if tile == "T":
                     Tower(
                         game, 
-                        position, 
+                        position,
+                        self.data.tower_img
                     )

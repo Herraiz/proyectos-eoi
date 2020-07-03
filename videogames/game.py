@@ -2,6 +2,7 @@ import pygame
 from settings import *
 from sprites import *
 from map import Map
+from data import Data
 
 
 class Game:
@@ -14,6 +15,7 @@ class Game:
         self.large_font = pygame.font.SysFont('arial', 100)
         self.small_font = pygame.font.SysFont("arial", 32)
 
+        self.data = Data()
         self.playing = False
         self.load_data()
 
@@ -36,7 +38,8 @@ class Game:
         self.map.create_sprites_from_map_data(self)
 
         self.player = Player(self, self.map.player_entry_point,
-                             PLAYER_MAX_SPEED, PLAYER_ACCELERATION, PLAYER_HEALTH, YELLOW)
+                             PLAYER_MAX_SPEED, PLAYER_ACCELERATION,
+                             PLAYER_HEALTH, self.data.player_img)
 
     def populate_map(self):
         for _ in range(3):
@@ -54,7 +57,6 @@ class Game:
 
         x, y = self.map.get_empty_position()
         self.map.map_data[y][x] = "T"
-
 
     def start_game(self):
         self.run()
@@ -93,11 +95,11 @@ class Game:
         for mob in self.mobs:
             mob.draw_health()
             # debug
-            pygame.draw.line(self.screen, RED, mob.position,
-                             mob.position + mob.avoidance * 5, 3)
+            # pygame.draw.line(self.screen, RED, mob.position,
+            #                  mob.position + mob.avoidance * 5, 3)
 
-            pygame.draw.line(self.screen, BLUE, mob.position,
-                             mob.position + mob.desired_velocity * 5, 3)
+            # pygame.draw.line(self.screen, BLUE, mob.position,
+            #                  mob.position + mob.desired_velocity * 5, 3)
             # debug
 
         self.draw_game_ui()

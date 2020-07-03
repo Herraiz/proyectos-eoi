@@ -35,83 +35,82 @@ class Ground(pygame.sprite.Sprite):
         self.rect.y = y * TILESIZE
 
 
-class Player(pygame.sprite.Sprite):
-    def __init__(self, game, position):
-        self.groups = game.all_sprites
-        pygame.sprite.Sprite.__init__(self, self.groups)
-        self.game = game
-        self.data = Data()
-        self.image = pygame.Surface((TILESIZE, TILESIZE))
-        self.image.fill(YELLOW)
-        self.rect = self.image.get_rect()
-        self.position = position * TILESIZE
-        self.desired_velocity = Vector2(0, 0)
-        self.velocity = Vector2(0, 0)
+# class Player(pygame.sprite.Sprite):
+#     def __init__(self, game, position):
+#         self.groups = game.all_sprites
+#         pygame.sprite.Sprite.__init__(self, self.groups)
+#         self.game = game
+#         self.data = Data()
+#         self.image = pygame.Surface((TILESIZE, TILESIZE))
+#         self.image.fill(YELLOW)
+#         self.rect = self.image.get_rect()
+#         self.position = position * TILESIZE
+#         self.desired_velocity = Vector2(0, 0)
+#         self.velocity = Vector2(0, 0)
 
-    def update(self):
-        self.handle_input()
+#     def update(self):
+#         self.handle_input()
 
-        self.velocity -= self.velocity * DRAG * self.game.dt
-        self.velocity += self.desired_velocity * PLAYER_ACCELERATION * self.game.dt
-        if self.velocity.magnitude() > PLAYER_MAX_SPEED:
-            self.velocity.scale_to_length(PLAYER_MAX_SPEED)
+#         self.velocity -= self.velocity * DRAG * self.game.dt
+#         self.velocity += self.desired_velocity * PLAYER_ACCELERATION * self.game.dt
+#         if self.velocity.magnitude() > PLAYER_MAX_SPEED:
+#             self.velocity.scale_to_length(PLAYER_MAX_SPEED)
 
-        self.position += self.velocity * self.game.dt
+#         self.position += self.velocity * self.game.dt
 
-        self.rect.x = self.position.x
-        self.collide_with_walls('x')
-        self.rect.y = self.position.y
-        self.collide_with_walls('y')
+#         self.rect.x = self.position.x
+#         self.collide_with_walls('x')
+#         self.rect.y = self.position.y
+#         self.collide_with_walls('y')
 
-    def handle_input(self):
-        vx, vy = 0, 0
-        key = pygame.key.get_pressed()
-        if key[pygame.K_a]:
-            vx = -1
-        if key[pygame.K_d]:
-            vx = 1
-        if key[pygame.K_w]:
-            vy = -1
-        if key[pygame.K_s]:
-            vy = 1
+#     def handle_input(self):
+#         vx, vy = 0, 0
+#         key = pygame.key.get_pressed()
+#         if key[pygame.K_a]:
+#             vx = -1
+#         if key[pygame.K_d]:
+#             vx = 1
+#         if key[pygame.K_w]:
+#             vy = -1
+#         if key[pygame.K_s]:
+#             vy = 1
 
-        self.desired_velocity = Vector2(vx, vy)
-        if self.desired_velocity.magnitude() > 0:
-            # para movernos bien en diagonal
-            self.desired_velocity = self.desired_velocity.normalize()
+#         self.desired_velocity = Vector2(vx, vy)
+#         if self.desired_velocity.magnitude() > 0:
+#             # para movernos bien en diagonal
+#             self.desired_velocity = self.desired_velocity.normalize()
 
-    def collide_with_walls(self, dir):
-        hits = pygame.sprite.spritecollide(self, self.game.walls, False)
-        if len(hits) == 0:
-            return
+#     def collide_with_walls(self, dir):
+#         hits = pygame.sprite.spritecollide(self, self.game.walls, False)
+#         if len(hits) == 0:
+#             return
 
-        if dir == 'x':
-            if self.velocity.x > 0:
-                self.position.x = hits[0].rect.left - self.rect.width
-            if self.velocity.x < 0:
-                self.position.x = hits[0].rect.right
-            self.velocity.x = 0
-            self.rect.x = self.position.x
+#         if dir == 'x':
+#             if self.velocity.x > 0:
+#                 self.position.x = hits[0].rect.left - self.rect.width
+#             if self.velocity.x < 0:
+#                 self.position.x = hits[0].rect.right
+#             self.velocity.x = 0
+#             self.rect.x = self.position.x
 
-        if dir == 'y':
-            if self.velocity.y > 0:
-                self.position.y = hits[0].rect.top - self.rect.height
-            if self.velocity.y < 0:
-                self.position.y = hits[0].rect.bottom
-            self.velocity.y = 0
-            self.rect.y = self.position.y
+#         if dir == 'y':
+#             if self.velocity.y > 0:
+#                 self.position.y = hits[0].rect.top - self.rect.height
+#             if self.velocity.y < 0:
+#                 self.position.y = hits[0].rect.bottom
+#             self.velocity.y = 0
+#             self.rect.y = self.position.y
 
 
 class Mob(pygame.sprite.Sprite):
     def __init__(self, game, groups, position, max_speed,
-                 acceleration, max_health, color):
+                 acceleration, max_health, image):
 
         self.groups = groups
         pygame.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.data = Data()
-        self.image = pygame.Surface((TILESIZE, TILESIZE))
-        self.image.fill(color)
+        self.image = image
         self.rect = self.image.get_rect()
 
         self.max_speed = max_speed + \
@@ -218,10 +217,11 @@ class Mob(pygame.sprite.Sprite):
 
 class Player(Mob):
     def __init__(self, game, position, max_speed,
-                 acceleration, max_health, color):
+                 acceleration, max_health, image):
 
         super().__init__(game, (game.all_sprites, game.players), position,
-                         max_speed, acceleration, max_health, color)
+                         max_speed, acceleration, max_health, image)
+
 
         self.max_speed = max_speed
         self.weapon_name = 'SHOTGUN'
@@ -253,10 +253,10 @@ class Player(Mob):
 
 class Bee(Mob):
     def __init__(self, game, position, max_speed,
-                 acceleration, max_health, damage, color, groups=()):
+                 acceleration, max_health, damage, image, groups=()):
 
         super().__init__(game, (game.all_sprites, game.mobs) + groups,
-                         position, max_speed, acceleration, max_health, color)
+                         position, max_speed, acceleration, max_health, image)
 
         self.damage = damage
 
@@ -274,9 +274,10 @@ class Bee(Mob):
 
 
 class BeeNest(Mob):
-    def __init__(self, game, position, max_health, spawn_frequency, max_population, color):
+    def __init__(self, game, position, max_health, spawn_frequency, max_population, image):
         super().__init__(game, (game.all_sprites, game.nests,
-                                game.mobs), position, 0, 0, max_health, color)
+                                game.mobs), position, 0, 0, max_health, image)
+
         self.spawn_frequency = spawn_frequency
         self.last_spawn_time = 0
         self.max_population = max_population
@@ -300,17 +301,17 @@ class BeeNest(Mob):
                     BEE_ACCELERATION,
                     BEE_HEALTH,
                     BEE_HIT_DAMAGE,
-                    YELLOW,
+                    self.data.bee_img,
                     (self.population,)
                 )
             self.last_spawn_time = pygame.time.get_ticks()
 
 class Tower(Mob):
-    def __init__(self, game, position):
+    def __init__(self, game, position, image):
         max_health = MOBS['TOWER']['HEALTH']
-        color = MOBS['TOWER']['COLOR']
         super().__init__(game, (game.all_sprites, game.mobs),
-                    position, 0, 0, max_health, color)
+                    position, 0, 0, max_health, image)
+
         self.weapon_name = MOBS['TOWER']['WEAPON_NAME']
         
     def update(self):
@@ -365,9 +366,9 @@ class Item(pygame.sprite.Sprite):
     def __init__(self, game, position, kind):
         self.groups = game.all_sprites, game.items
         pygame.sprite.Sprite.__init__(self, self.groups)
+        self.data = Data()
         self.game = game
-        self.image = pygame.Surface((TILESIZE, TILESIZE))
-        self.image.fill(ITEMS[kind]['COLOR'])
+        self.image = self.data.healthpack_img
         self.rect = self.image.get_rect()
         self.position = position
         self.rect.topleft = position
@@ -389,6 +390,7 @@ class HealthPack(Item):
             position,
             'HEALTHPACK'
         )
+        self.image = self.data.healthpack_img
 
     def picked_by(self, picker):
         heal = ITEMS[self.kind]['HEAL']
@@ -403,6 +405,7 @@ class SpeedUp(Item):
             position,
             'SPEEDUP'
         )
+        self.image = self.data.speedup_img
         self.picker = None
         self.picker_base_speed = 0
         self.picker_max_speed = 0

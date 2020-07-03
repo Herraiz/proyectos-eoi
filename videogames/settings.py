@@ -14,13 +14,14 @@ GROUND = (66, 40, 53)
 WALL = (48, 29, 39)
 
 # game settings
-WIDTH = 640
-HEIGHT = 480
+WIDTH = 1440
+HEIGHT = 900
 FPS = 60
 GAME_TITLE = "Pew Pew Pew"
 
-TILESIZE = 16
-
+# map
+TILESIZE = 42
+KEY_COLOR = (94, 129, 162)
 
 DRAG = 10
 AVOID_RADIUS = 50
@@ -40,10 +41,34 @@ BEE_NEST_MAX_POPULATION = 5
 BEE_NEST_HEALTH = 100
 
 MOBS = {
+    'PLAYER': {
+        'HEALTH': 100,
+        'IMG': (19, 3),
+        'WEAPON_NAME': 'GUN',
+        'MAX_SPEED': 100,
+        'ACCELERATION': 2000,
+    },
+
+    'BEE': {
+        'HEALTH': 10,
+        'IMG': (24, 11),
+        'HIT_DAMAGE': 10,
+        'MAX_SPEED': 50,
+        'ACCELERATION': 10000,
+        'VISION_RADIUS': 150,
+        },
+
+    'BEE_NEST': {
+        'HEALTH': 100,
+        'IMG': (26, 28),
+        'MAX_POPULATION': 5,
+        'SPAWN_FREQUENCY': 5000,
+    },
+
     'TOWER': {
         'HEALTH': 100,
-        'COLOR': PURPLE,
-        'WEAPON_NAME': 'GUN'
+        'WEAPON_NAME': 'GUN',
+        'IMG': (28, 23)
     },
 }
 
@@ -53,14 +78,14 @@ ITEM_HOVER_SPEED = 0.01
 ITEMS = {
     'HEALTHPACK': {
         'HEAL': 20,
+        'IMG': (13,12),
         'FX': 'heal.wav',
-        'COLOR': RED
     },
 
     'SPEEDUP': {
         'SPEED': 50,
         'TTL': 3000,
-        'COLOR': BLUE
+        'IMG': (6, 29),
     }
 }
 

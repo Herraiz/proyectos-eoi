@@ -30,7 +30,6 @@ class Game:
         self.items = pygame.sprite.Group()
         self.players = pygame.sprite.Group()
 
-        
         # self.map.load_from_file('map.txt')
         # self.map.carve_cave_cellular_automata(self, WIDTH, HEIGHT)
         self.map.carve_cave_drunken_diggers(self, WIDTH, HEIGHT)
@@ -38,6 +37,7 @@ class Game:
 
         self.map.create_sprites_from_map_data(self)
 
+    def spawn_player(self):
         self.player = Player(self, self.map.player_entry_point,
                              PLAYER_MAX_SPEED, PLAYER_ACCELERATION,
                              PLAYER_HEALTH, self.data.player_img, self.map)
@@ -60,7 +60,6 @@ class Game:
             x, y = self.map.get_empty_position()
             self.map.map_data[y][x] = "T"
 
-
         increase_utility = round(self.level * 0.03)
 
         # HealthPack
@@ -77,11 +76,13 @@ class Game:
         self.level = 1
         self.score = 0
         self.load_data()
+        self.spawn_player()
         self.run()
-    
-    def restart_game(self):
+
+    def next_level(self):
         self.level += 1
         self.load_data()
+        self.spawn_player()
         self.run()
 
     def run(self):
@@ -102,29 +103,26 @@ class Game:
         self.all_sprites.update()
 
         if len(self.mobs) == 0:
-            self.restart_game()
-
-        if len(self.players) == 0:
-            self.game_over()
+            self.next_level()
 
     def draw(self):
         self.screen.fill(GROUND)
 
-        # Draw order:
         self.floor.draw(self.screen)
         self.walls.draw(self.screen)
         self.mobs.draw(self.screen)
         self.items.draw(self.screen)
         self.bullets.draw(self.screen)
-        self.players.draw(self.screen)
-    
+        
 
         for mob in self.mobs:
             mob.draw_health()
 
         self.draw_game_ui()
 
-        pygame.display.update()
+        self.players.draw(self.screen)
+
+        pygame.display.flip()
 
     def draw_game_ui(self):
 
@@ -141,42 +139,41 @@ class Game:
         pygame.draw.rect(self.screen, BLUE, health_fill)
 
         # Score
-        score_text = self.small_font.render(f'- Score: {self.score}', True, WHITE)
+        score_text = self.small_font.render(
+            f'- Score: {self.score}', True, WHITE)
         self.screen.blit(score_text, (width + 173, 4))
 
         # Level
-        level_text = self.small_font.render(f'- Level: {self.level}', True, WHITE)
+        level_text = self.small_font.render(
+            f'- Level: {self.level}', True, WHITE)
         self.screen.blit(level_text, (width + 22, 4))
 
-
     def main_menu(self):
-            title_text = self.large_font.render('MOUNTAIN PEW', True, YELLOW)
-            instructions_text = self.small_font.render("Press any key to START", True, WHITE)
+        title_text = self.large_font.render('MOUNTAIN PEW', True, YELLOW)
+        instructions_text = self.small_font.render(
+            "Press any key to START", True, WHITE)
 
-            self.screen.fill(DARKGREY)
-            self.screen.blit(title_text,
-                            (WIDTH // 2 - title_text.get_rect().width // 2,
-                            HEIGHT - 550 - title_text.get_rect().height // 2))
+        self.screen.fill(DARKGREY)
+        self.screen.blit(title_text,
+                         (WIDTH // 2 - title_text.get_rect().width // 2,
+                          HEIGHT - 550 - title_text.get_rect().height // 2))
 
-            self.screen.blit(instructions_text,
-                            (WIDTH // 2 - instructions_text.get_rect().width // 2,
-                            HEIGHT - 300))
+        self.screen.blit(instructions_text,
+                         (WIDTH // 2 - instructions_text.get_rect().width // 2,
+                          HEIGHT - 300))
 
+        pygame.display.flip()
 
-            pygame.display.flip()
+        in_main_menu = True
 
-            in_main_menu = True
-
-            while in_main_menu:
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        pygame.quit()
-                        quit()
-                    if event.type == pygame.KEYDOWN:
-                        in_main_menu = False
-                        self.start_game()
-                        
-
+        while in_main_menu:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    quit()
+                if event.type == pygame.KEYDOWN:
+                    in_main_menu = False
+                    self.start_game()
 
     def game_over(self):
         # pygame.mixer.music.stop()
@@ -187,13 +184,12 @@ class Game:
 
         self.screen.fill(DARKGREY)
         self.screen.blit(title_text,
-                        (WIDTH // 2 - title_text.get_rect().width // 2,
-                        HEIGHT - 550  - title_text.get_rect().height // 2))
+                         (WIDTH // 2 - title_text.get_rect().width // 2,
+                          HEIGHT - 550 - title_text.get_rect().height // 2))
 
         self.screen.blit(score_text,
-                        (WIDTH // 2 - score_text.get_rect().width // 2,
-                        HEIGHT - 300))
-
+                         (WIDTH // 2 - score_text.get_rect().width // 2,
+                          HEIGHT - 300))
 
         pygame.display.flip()
 
@@ -207,7 +203,6 @@ class Game:
                 if event.type == pygame.KEYDOWN:
                     in_game_over = False
                     self.main_menu()
-
 
 
 game = Game()

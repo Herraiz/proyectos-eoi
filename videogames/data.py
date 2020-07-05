@@ -21,7 +21,6 @@ class Data():
 
     def load_img(self):
         sprites = Spritesheet(path.join(self.img_folder, "spritesheet.png"))
-        players = Spritesheet(path.join(self.img_folder, "Player0.png"))
 
         # Items
 

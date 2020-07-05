@@ -148,6 +148,12 @@ class Game:
             f'- Level: {self.level}', True, WHITE)
         self.screen.blit(level_text, (width + 22, 4))
 
+        # Weapon
+        weapon_text = self.small_font.render(
+            f'WEAPON: {self.player.weapon_name}', True, WHITE)
+        self.screen.blit(weapon_text, (WIDTH - 360 , 4))
+
+
     def main_menu(self):
         title_text = self.large_font.render('MOUNTAIN PEW', True, YELLOW)
         instructions_text = self.small_font.render(

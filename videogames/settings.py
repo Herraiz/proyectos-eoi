@@ -46,7 +46,7 @@ BEE_NEST_HEALTH = 100
 MOBS = {
     'PLAYER': {
         'HEALTH': 100,
-        'IMG': (19, 3),
+        'IMG': (19, 2),
         'WEAPON_NAME': 'GUN',
         'MAX_SPEED': 100,
         'ACCELERATION': 2000,

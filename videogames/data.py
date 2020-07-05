@@ -17,10 +17,11 @@ class Data():
         self.img_folder = path.join(self.root_folder, "img")
         self.fx_folder = path.join(self.root_folder, "fx")
         self.load_img()
+        self.load_fx()
 
     def load_img(self):
-        spritesheet_path = path.join(self.img_folder, "spritesheet.png")
-        sprites = Spritesheet(spritesheet_path)
+        sprites = Spritesheet(path.join(self.img_folder, "spritesheet.png"))
+        players = Spritesheet(path.join(self.img_folder, "Player0.png"))
 
         # Items
 

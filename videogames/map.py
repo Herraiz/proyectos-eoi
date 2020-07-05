@@ -22,17 +22,16 @@ class Map():
             for line in file:
                 self.map_data.append(line)
 
-    def carve_cave_cellular_automata(self, game, width, height):
-        width = WIDTH // TILESIZE
-        height = HEIGHT // TILESIZE
-
+    def carve_cave_cellular_automata(self, game, screen_width, screen_height):
+        width = screen_width // TILESIZE
+        height = screen_height // TILESIZE
         self.width = width
         self.height = height
 
-        self.map_data = [["1" if y == 0 or y == (height - 1) or x == 0 or x == (width - 1)
-                          else "0" for x in range(0, width)] for y in range(0, height)]
+        self.map_data = [['1' if y == 0 or y == (height-1) or x == 0 or x == (
+            width - 1) else '0' for x in range(0, width)] for y in range(0, height)]
 
-        starting_walls = (int)(width * height * 0.45)
+        starting_walls = (int)(width * height * 0.4)
         for _ in range(0, starting_walls):
             x = random.randint(1, width - 1)
             y = random.randint(1, height - 1)
@@ -42,7 +41,6 @@ class Map():
         self.smooth_map(iterations, width, height)
 
     def smooth_map(self, iterations, width, height):
-
         neighbour_deltas = [(x, y) for x in range(-1, 2)
                             for y in range(-1, 2) if x != 0 or y != 0]
         for _ in range(iterations):
@@ -60,18 +58,17 @@ class Map():
                         tmp_map[y][x] = "1" if sum >= 5 else "0"
             self.map_data = tmp_map.copy()
 
-    def carve_cave_drunken_diggers(self, game, width, height):
-        width = WIDTH // TILESIZE
-        height = HEIGHT // TILESIZE
-
+    def carve_cave_drunken_diggers(self, game, screen_width, screen_height):
+        width = screen_width // TILESIZE
+        height = screen_height // TILESIZE
         self.width = width
         self.height = height
 
-        self.map_data = [["1" for x in range(0, width)]
+        self.map_data = [['1' for x in range(0, width)]
                          for y in range(0, height)]
 
         iterations = (int)(width * height * 0.45)
-        digger_count = 3
+        digger_count = 5
         diggers = [Vector2(width//2, height//2) for i in range(digger_count)]
         neighbour_deltas = [(-1, 0), (0, 1), (1, 0), (0, -1)]
 
@@ -79,7 +76,8 @@ class Map():
             tmp_map = self.map_data.copy()
             for i in range(digger_count):
                 direction = random.choice(neighbour_deltas)
-                diggers[i] += direction
+
+                diggers[i] = diggers[i] + direction
                 if diggers[i].x < 1:
                     diggers[i].x = 1
                 if diggers[i].y < 1:
@@ -88,22 +86,21 @@ class Map():
                     diggers[i].x = width - 2
                 if diggers[i].y > height - 2:
                     diggers[i].y = height - 2
-
                 tmp_map[int(diggers[i].y)][int(diggers[i].x)] = "0"
 
             self.map_data = tmp_map.copy()
-        # self.smooth_map(2, width, height)
 
     def get_empty_position(self):
         is_empty = False
-        while not is_empty:
+        while is_empty == False:
             x = random.randint(1, self.width - 1)
             y = random.randint(1, self.height - 1)
             if self.map_data[y][x] == "0":
                 return (x, y)
 
     def create_empty_square(self, x, y):
-        neighbour_deltas = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+        neighbour_deltas = [(-1, -1), (-1, 0), (-1, 1),
+                            (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
         for i in neighbour_deltas:
             ix, iy = i
             self.map_data[iy][ix] = "0"
@@ -134,26 +131,26 @@ class Map():
                         game,
                         position,
                         BEE_NEST_HEALTH,
-                        BEE_NEST_SPAWN_FREQUENCY,
+                        BEE_NEST_SPAWN_FREQUENCY + randint(2000, 5000),
                         BEE_NEST_MAX_POPULATION,
                         self.data.bee_nest_img
                     )
 
                 if tile == "h":
                     HealthPack(
-                        game, 
-                        position, 
+                        game,
+                        position,
                     )
 
                 if tile == "s":
                     SpeedUp(
-                        game, 
-                        position, 
+                        game,
+                        position,
                     )
 
                 if tile == "T":
                     Tower(
-                        game, 
+                        game,
                         position,
                         self.data.tower_img
                     )

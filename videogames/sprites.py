@@ -100,8 +100,6 @@ class Mob(pygame.sprite.Sprite):
             self.velocity.y = 0
             self.rect.y = self.position.y
 
-        if self.position.x == hits[0].rect.center: #TODO: Comprobar que funciona si no hay más bichos
-            self.kill()
 
     def receive_damage(self, damage):
         self.health -= damage
@@ -123,7 +121,9 @@ class Mob(pygame.sprite.Sprite):
                 towards_mob = mob.position - self.position
                 if 0 < towards_mob.magnitude() < AVOID_RADIUS:
                     towards_mobs += towards_mob / towards_mob.magnitude()
-        self.avoidance = self.avoidance.lerp(-towards_mobs, self.game.dt)
+
+        # self.avoidance = self.avoidance.lerp(-towards_mobs, self.game.dt) #TODO: No funciona con bees
+
 
     def shoot_at(self, x, y, target_group):
         weapon = WEAPONS[self.weapon_name]
@@ -148,17 +148,17 @@ class Mob(pygame.sprite.Sprite):
                 weapon['SIZE'],
                 target_group
             )
-            # self.data.gun_sound.play() # TODO: SOUND
+            self.data.gun_sound.play() # TODO: SOUND
         self.last_shot_time = pygame.time.get_ticks()
 
 
 class Player(Mob):
     def __init__(self, game, position, max_speed,
-                 acceleration, max_health, image):
+                 acceleration, max_health, image, map):
 
         super().__init__(game, (game.all_sprites, game.players), position,
                          max_speed, acceleration, max_health, image)
-
+        self.map = map
         self.max_speed = max_speed
         self.weapon_name = 'DEAGLE'
 
@@ -166,7 +166,19 @@ class Player(Mob):
         self.handle_input()
         self.move()
 
+        # teleport player if is outside the window
+        if self.position.x > WIDTH or self.position.x < 0:
+            self.position.x, self.position.y = self.map.get_empty_position()
+        if self.position.y > HEIGHT or self.position.y <0:
+            self.position.x, self.position.y = self.map.get_empty_position()
+
     def handle_input(self):
+
+        mouse = pygame.mouse.get_pressed()
+        if mouse[0] or mouse[0] or mouse[0]:
+            x, y = pygame.mouse.get_pos()
+            self.shoot_at(x, y, self.game.mobs)
+
         vx, vy = 0, 0
         key = pygame.key.get_pressed()
         if key[pygame.K_a]:
@@ -179,11 +191,6 @@ class Player(Mob):
             vy = 1
 
         self.desired_velocity = Vector2(vx, vy)
-
-        mouse = pygame.mouse.get_pressed()
-        if mouse[0]:
-            x, y = pygame.mouse.get_pos()
-            self.shoot_at(x, y, self.game.mobs)
 
 
 class Bee(Mob):
@@ -206,6 +213,19 @@ class Bee(Mob):
         self.move()
         if pygame.sprite.collide_rect(self, self.game.player):
             self.game.player.receive_damage(self.damage * self.game.dt)
+
+        # Kill the mobs outside the window
+        if self.position.x > WIDTH or self.position.x < 0:
+            self.kill()
+        if self.position.y > HEIGHT or self.position.y <0:
+            self.kill()
+        
+    def receive_damage(self, damage):
+        self.health -= damage
+        if self.health <= 0:
+            self.health = 0
+            self.game.score += 10
+            self.kill()
 
 
 class BeeNest(Mob):
@@ -241,6 +261,12 @@ class BeeNest(Mob):
                 )
             self.last_spawn_time = pygame.time.get_ticks()
 
+    def receive_damage(self, damage):
+        self.health -= damage
+        if self.health <= 0:
+            self.health = 0
+            self.game.score += 30
+            self.kill()
 
 class Tower(Mob):
     def __init__(self, game, position, image):
@@ -256,6 +282,13 @@ class Tower(Mob):
 
         if 0 < towards_player.magnitude() < 200:     # TODO: VISION RADIUS, RANGE
             self.shoot_at(target.x, target.y, self.game.players)
+    
+    def receive_damage(self, damage):
+        self.health -= damage
+        if self.health <= 0:
+            self.health = 0
+            self.game.score += 100
+            self.kill()
 
 
 class Bullet(pygame.sprite.Sprite):
@@ -360,7 +393,7 @@ class SpeedUp(Item):
         self.stop_working_at = pygame.time.get_ticks() + ttl
         self.rect.x = -10000000
 
-        # investigar set_timer()
+        # TODO: investigar set_timer()
 
     def update(self):
         if self.picker == None:

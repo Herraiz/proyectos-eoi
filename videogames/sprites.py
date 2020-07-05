@@ -56,6 +56,8 @@ class Mob(pygame.sprite.Sprite):
         self.avoidance = Vector2(0, 0)
         self.max_health = max_health
         self.health = max_health
+        self.mob_score = 0
+        self.spawn_time = pygame.time.get_ticks()
 
         self.last_shot_time = 0  # TODO: ESTO IRÁ EN LA CLASS WEAPON FUTURA
 
@@ -100,11 +102,11 @@ class Mob(pygame.sprite.Sprite):
             self.velocity.y = 0
             self.rect.y = self.position.y
 
-
     def receive_damage(self, damage):
         self.health -= damage
         if self.health <= 0:
             self.health = 0
+            self.game.score += self.mob_score
             self.kill()
 
     def draw_health(self):
@@ -122,8 +124,7 @@ class Mob(pygame.sprite.Sprite):
                 if 0 < towards_mob.magnitude() < AVOID_RADIUS:
                     towards_mobs += towards_mob / towards_mob.magnitude()
 
-        # self.avoidance = self.avoidance.lerp(-towards_mobs, self.game.dt) #TODO: No funciona con bees
-
+        # self.avoidance = self.avoidance.lerp(-towards_mobs, self.game.dt)
 
     def shoot_at(self, x, y, target_group):
         weapon = WEAPONS[self.weapon_name]
@@ -148,7 +149,7 @@ class Mob(pygame.sprite.Sprite):
                 weapon['SIZE'],
                 target_group
             )
-            self.data.gun_sound.play() # TODO: SOUND
+            self.data.gun_sound.play()  # TODO: SOUND
         self.last_shot_time = pygame.time.get_ticks()
 
 
@@ -169,11 +170,17 @@ class Player(Mob):
         # teleport player if is outside the window
         if self.position.x > WIDTH or self.position.x < 0:
             self.position.x, self.position.y = self.map.get_empty_position()
-        if self.position.y > HEIGHT or self.position.y <0:
+        if self.position.y > HEIGHT or self.position.y < 0:
             self.position.x, self.position.y = self.map.get_empty_position()
 
-    def handle_input(self):
+    def receive_damage(self, damage):
+        self.health -= damage
+        if self.health <= 0:
+            self.health = 0
+            self.kill()
+            self.game.game_over()
 
+    def handle_input(self):
         mouse = pygame.mouse.get_pressed()
         if mouse[0] or mouse[0] or mouse[0]:
             x, y = pygame.mouse.get_pos()
@@ -201,6 +208,7 @@ class Bee(Mob):
                          position, max_speed, acceleration, max_health, image)
 
         self.damage = damage
+        self.mob_score = 10
 
     def update(self):
         towards_player = self.game.player.position - self.position
@@ -217,14 +225,7 @@ class Bee(Mob):
         # Kill the mobs outside the window
         if self.position.x > WIDTH or self.position.x < 0:
             self.kill()
-        if self.position.y > HEIGHT or self.position.y <0:
-            self.kill()
-        
-    def receive_damage(self, damage):
-        self.health -= damage
-        if self.health <= 0:
-            self.health = 0
-            self.game.score += 10
+        if self.position.y > HEIGHT or self.position.y < 0:
             self.kill()
 
 
@@ -237,6 +238,7 @@ class BeeNest(Mob):
         self.last_spawn_time = 0
         self.max_population = max_population
         self.population = pygame.sprite.Group()
+        self.mob_score = 30
 
     def update(self):
         time_since_last_spawn = pygame.time.get_ticks() - self.last_spawn_time
@@ -261,12 +263,6 @@ class BeeNest(Mob):
                 )
             self.last_spawn_time = pygame.time.get_ticks()
 
-    def receive_damage(self, damage):
-        self.health -= damage
-        if self.health <= 0:
-            self.health = 0
-            self.game.score += 30
-            self.kill()
 
 class Tower(Mob):
     def __init__(self, game, position, image):
@@ -275,6 +271,7 @@ class Tower(Mob):
                          position, 0, 0, max_health, image)
 
         self.weapon_name = MOBS['TOWER']['WEAPON_NAME']
+        self.mob_score = 100
 
     def update(self):
         towards_player = self.game.player.position - self.position
@@ -282,13 +279,6 @@ class Tower(Mob):
 
         if 0 < towards_player.magnitude() < 200:     # TODO: VISION RADIUS, RANGE
             self.shoot_at(target.x, target.y, self.game.players)
-    
-    def receive_damage(self, damage):
-        self.health -= damage
-        if self.health <= 0:
-            self.health = 0
-            self.game.score += 100
-            self.kill()
 
 
 class Bullet(pygame.sprite.Sprite):

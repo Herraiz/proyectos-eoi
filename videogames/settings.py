@@ -71,6 +71,7 @@ MOBS = {
     'TOWER': {
         'HEALTH': 100,
         'WEAPON_NAME': 'GUN',
+        'VISION_RADIUS': 250,
         'IMG': (28, 23)
     },
 }
@@ -96,37 +97,41 @@ WEAPONS = {
     'GUN': {
         'FIRING_RATE': 250,
         'SPREAD': 0.1,
-        'TTL':  2000,
+        'TTL':  1200,
         'SPEED': 300,
         'DAMAGE': 5,
         'COLOR': RED,
         'SIZE': 10,
         'AMMO_PER_SHOT': 1,
-        'FX': "pew.wav"
+        'FX': "pew.wav",
+        'IMG': "gun.png"
     },
-        'MACHINEGUN': {
+    'MACHINEGUN': {
         'FIRING_RATE': 100,
         'SPREAD': 0.1,
-        'TTL':  1500,
-        'SPEED': 300,
-        'DAMAGE': 2,
+        'TTL':  1200,
+        'SPEED': 400,
+        'DAMAGE': 3,
         'COLOR': RED,
         'SIZE': 8,
         'AMMO_PER_SHOT': 1,
-        'FX': "papapapa.wav"
+        'FX': "papapapa.wav",
+        'IMG': "machinegun.png"
     },
-        'SHOTGUN': {
+    'SHOTGUN': {
         'FIRING_RATE': 2000,
         'SPREAD': 0.5,
-        'TTL':  500,
+        'TTL':  1000,
         'SPEED': 300,
         'DAMAGE': 10,
         'COLOR': RED,
         'SIZE': 8,
         'AMMO_PER_SHOT': 10,
-        'FX': "kaboom.wav"
+        'FX': "kaboom.wav",
+        'IMG': "shotgun.png"
     },
-        'DEAGLE': {
+
+    'DEAGLE': {
         'FIRING_RATE': 100,
         'SPREAD': 0.1,
         'TTL':  2000,
@@ -135,7 +140,21 @@ WEAPONS = {
         'COLOR': RED,
         'SIZE': 10,
         'AMMO_PER_SHOT': 1,
-        'FX': "kaboom.wav"
+        'FX': "kaboom.wav",
+        'IMG': "deagle.png"
+    },
+
+    'ASSAULT': {
+        'FIRING_RATE': 100,
+        'SPREAD': 0.1,
+        'TTL':  2000,
+        'SPEED': 300,
+        'DAMAGE': 10,
+        'COLOR': RED,
+        'SIZE': 10,
+        'AMMO_PER_SHOT': 3,
+        'FX': "kaboom.wav",
+        'IMG': "assault.png"
     },
 }
 

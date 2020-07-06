@@ -107,8 +107,10 @@ class Map():
                 #     Floor(game, col, row, self.data.floor_img)
                 if tile == '1':
                     Wall(game, col, row, self.data.wall_img)
+
                 if tile == 'P':
                     self.player_entry_point = position
+                    
                 if tile == "b":
                     Bee(
                         game,
@@ -130,21 +132,27 @@ class Map():
                         self.data.bee_nest_img
                     )
 
-                if tile == "h":
-                    HealthPack(
-                        game,
-                        position,
-                    )
-
-                if tile == "s":
-                    SpeedUp(
-                        game,
-                        position,
-                    )
-
                 if tile == "T":
                     Tower(
                         game,
                         position,
                         self.data.tower_img
                     )
+
+                if tile == "h":
+                    HealthPack(game, position)
+
+                if tile == "s":
+                    SpeedUp(game, position)
+
+                if tile == "M":
+                    Machinegun(game, position)
+
+                if tile == "S":
+                    Shotgun(game, position)
+
+                if tile == "D":
+                    Deagle(game, position)
+
+                if tile == "A":
+                    Assault(game, position)

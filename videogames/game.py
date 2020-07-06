@@ -17,6 +17,11 @@ class Game:
 
         self.data = Data()
         self.map = Map()
+
+        self.player = None
+        self.player_current_weapon = 'GUN'
+        self.player_current_weapon_img = self.data.gun_img
+
         self.playing = False
         self.main_menu()
 
@@ -33,16 +38,42 @@ class Game:
         # self.map.load_from_file('map.txt')
         # self.map.carve_cave_cellular_automata(self, WIDTH, HEIGHT)
         self.map.carve_cave_drunken_diggers(self, WIDTH, HEIGHT)
+
         self.populate_map()
 
         self.map.create_sprites_from_map_data(self)
 
-    def spawn_player(self):
+
         self.player = Player(self, self.map.player_entry_point,
-                             PLAYER_MAX_SPEED, PLAYER_ACCELERATION,
-                             PLAYER_HEALTH, self.data.player_img, self.map)
+                    PLAYER_MAX_SPEED, PLAYER_ACCELERATION,
+                    PLAYER_HEALTH, self.data.player_img, self.map, 
+                    self.player_current_weapon, 
+                    self.player_current_weapon_img)
+
+    def reload_data(self):
+        self.all_sprites = pygame.sprite.Group()
+        self.walls = pygame.sprite.Group()
+        self.floor = pygame.sprite.Group()
+        self.bullets = pygame.sprite.Group()
+        self.mobs = pygame.sprite.Group()
+        self.nests = pygame.sprite.Group()
+        self.items = pygame.sprite.Group()
+
+        # self.map.load_from_file('map.txt')
+        # self.map.carve_cave_cellular_automata(self, WIDTH, HEIGHT)
+        self.map.carve_cave_drunken_diggers(self, WIDTH, HEIGHT)
+
+        self.populate_map()
+
+        self.map.create_sprites_from_map_data(self)
+
+        self.player.respawn(self.map.player_entry_point)
+
+
+
 
     def populate_map(self):
+        print(f'{self.player_current_weapon}')
 
         # Player
         x, y = self.map.get_empty_position()
@@ -72,17 +103,38 @@ class Game:
             x, y = self.map.get_empty_position()
             self.map.map_data[y][x] = "s"
 
+        ## Weapons
+
+        # Machinegun
+        if self.level >= 6 and self.level <= 9:
+            x, y = self.map.get_empty_position()
+            self.map.map_data[y][x] = "M"
+    
+        # Shotgun
+        if self.level >= 10 and self.level <= 14:
+            x, y = self.map.get_empty_position()
+            self.map.map_data[y][x] = "S"
+
+        # Deagle
+        if self.level >= 15 and self.level <= 19:
+            x, y = self.map.get_empty_position()
+            self.map.map_data[y][x] = "D"  
+
+        # Assault
+        if self.level >= 15:
+            x, y = self.map.get_empty_position()
+            self.map.map_data[y][x] = "A" 
+
+
     def start_game(self):
-        self.level = 1
+        self.level = 20
         self.score = 0
         self.load_data()
-        self.spawn_player()
         self.run()
 
     def next_level(self):
         self.level += 1
-        self.load_data()
-        self.spawn_player()
+        self.reload_data()
         self.run()
 
     def run(self):
@@ -100,29 +152,32 @@ class Game:
                 quit()
 
     def update(self):
-        self.all_sprites.update()
+        self.players.update()
+        self.floor.update()
+        self.walls.update()
+        self.mobs.update()
+        self.items.update()
+        self.bullets.update()
 
         if len(self.mobs) == 0:
             self.next_level()
 
     def draw(self):
-        self.screen.fill(GROUND)
 
+        self.screen.fill(GROUND)
+        self.players.draw(self.screen)
         self.floor.draw(self.screen)
         self.walls.draw(self.screen)
         self.mobs.draw(self.screen)
         self.items.draw(self.screen)
         self.bullets.draw(self.screen)
-        
 
         for mob in self.mobs:
             mob.draw_health()
 
         self.draw_game_ui()
 
-        self.players.draw(self.screen)
-
-        pygame.display.flip()
+        pygame.display.update()
 
     def draw_game_ui(self):
 
@@ -149,10 +204,7 @@ class Game:
         self.screen.blit(level_text, (width + 22, 4))
 
         # Weapon
-        weapon_text = self.small_font.render(
-            f'WEAPON: {self.player.weapon_name}', True, WHITE)
-        self.screen.blit(weapon_text, (WIDTH - 360 , 4))
-
+        self.screen.blit(self.player.weapon_img, (5, HEIGHT - 47))
 
     def main_menu(self):
         title_text = self.large_font.render('MOUNTAIN PEW', True, YELLOW)

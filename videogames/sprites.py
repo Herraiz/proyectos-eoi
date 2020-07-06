@@ -149,19 +149,20 @@ class Mob(pygame.sprite.Sprite):
                 weapon['SIZE'],
                 target_group
             )
-            self.data.gun_sound.play()  # TODO: SOUND
+            self.data.gun_sound.play()
         self.last_shot_time = pygame.time.get_ticks()
 
 
 class Player(Mob):
     def __init__(self, game, position, max_speed,
-                 acceleration, max_health, image, map):
+                 acceleration, max_health, image, map, weapon, weapon_img):
 
         super().__init__(game, (game.all_sprites, game.players), position,
                          max_speed, acceleration, max_health, image)
         self.map = map
         self.max_speed = max_speed
-        self.weapon_name = 'DEAGLE'
+        self.weapon_name = weapon
+        self.weapon_img = weapon_img
 
     def update(self):
         self.handle_input()
@@ -179,6 +180,17 @@ class Player(Mob):
             self.health = 0
             self.kill()
             self.game.game_over()
+
+    def respawn(self, new_position):
+        self.position.x = new_position.x
+        self.position.y = new_position.y
+        self.rect.x = self.position.x
+        self.rect.y = self.position.y
+        print('Teleport complete')
+        # Player(self.game, new_position, PLAYER_MAX_SPEED, 
+        # PLAYER_ACCELERATION, PLAYER_HEALTH, self.data.player_img, self.map,
+        # self.weapon_name, self.weapon_img)
+        # self.kill()
 
     def handle_input(self):
         mouse = pygame.mouse.get_pressed()
@@ -198,6 +210,7 @@ class Player(Mob):
             vy = 1
 
         self.desired_velocity = Vector2(vx, vy)
+
 
 
 class Bee(Mob):
@@ -276,8 +289,9 @@ class Tower(Mob):
     def update(self):
         towards_player = self.game.player.position - self.position
         target = self.game.player.position
+        vision_radius = MOBS['TOWER']['VISION_RADIUS']
 
-        if 0 < towards_player.magnitude() < 200:     # TODO: VISION RADIUS, RANGE
+        if 0 < towards_player.magnitude() < vision_radius:
             self.shoot_at(target.x, target.y, self.game.players)
 
 
@@ -383,7 +397,6 @@ class SpeedUp(Item):
         self.stop_working_at = pygame.time.get_ticks() + ttl
         self.rect.x = -10000000
 
-        # TODO: investigar set_timer()
 
     def update(self):
         if self.picker == None:
@@ -395,3 +408,53 @@ class SpeedUp(Item):
             speed_up = ITEMS[self.kind]['SPEED']
             self.picker.max_speed -= speed_up
             self.kill()
+
+class Weapon(pygame.sprite.Sprite):
+    def __init__(self, game, position):
+        self.groups = game.all_sprites, game.items
+        pygame.sprite.Sprite.__init__(self, self.groups)
+        self.data = Data()
+        self.game = game
+        self.image = self.data.gun_img
+        self.rect = self.image.get_rect()
+        self.position = position
+        self.rect.topleft = position
+        self.weapon_name = 'GUN'
+        self.picker = None
+
+    def update(self):
+        self.rect.top = self.position.y + math.sin(pygame.time.get_ticks() *
+                                                   ITEM_HOVER_SPEED) * TILESIZE // 2
+        if pygame.sprite.collide_rect(self, self.game.player):
+            self.picked_by(self.game.player)
+
+    def picked_by(self, picker):
+        self.picker = picker
+        if picker.weapon_name != self.weapon_name:
+            self.picker.weapon_name = self.weapon_name
+            self.picker.weapon_img = self.image
+            self.kill()
+
+class Machinegun(Weapon):
+    def __init__(self, game, position):
+        super().__init__(game, position)
+        self.image = self.data.machinegun_img
+        self.weapon_name = 'MACHINEGUN'
+
+class Shotgun(Weapon):
+    def __init__(self, game, position):
+        super().__init__(game, position)
+        self.image = self.data.shotgun_img
+        self.weapon_name = 'SHOTGUN'
+
+class Deagle(Weapon):
+    def __init__(self, game, position):
+        super().__init__(game, position)
+        self.image = self.data.deagle_img
+        self.weapon_name = 'DEAGLE'
+
+class Assault(Weapon):
+    def __init__(self, game, position):
+        super().__init__(game, position)
+        self.image = self.data.assault_img
+        self.weapon_name = 'ASSAULT'

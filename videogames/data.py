@@ -94,6 +94,23 @@ class Data():
                     KEY_COLOR
         )
 
+        # Weapons
+
+        self.gun_img = pygame.image.load(path.join(self.img_folder, 
+                                        WEAPONS['GUN']['IMG'])).convert_alpha()
+
+        self.machinegun_img = pygame.image.load(path.join(self.img_folder, 
+                                        WEAPONS['MACHINEGUN']['IMG'])).convert_alpha()
+        
+        self.shotgun_img = pygame.image.load(path.join(self.img_folder, 
+                                        WEAPONS['SHOTGUN']['IMG'])).convert_alpha()
+
+        self.deagle_img = pygame.image.load(path.join(self.img_folder, 
+                                        WEAPONS['DEAGLE']['IMG'])).convert_alpha()
+
+        self.assault_img = pygame.image.load(path.join(self.img_folder, 
+                                        WEAPONS['ASSAULT']['IMG'])).convert_alpha()
+
     def load_fx(self):
 
         self.walk_fx = []

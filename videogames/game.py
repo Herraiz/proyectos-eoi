@@ -7,8 +7,13 @@ from data import Data
 
 class Game:
     def __init__(self):
+        pygame.mixer.pre_init(44100, -16, 2, 1024)
         pygame.init()
+        pygame.mixer.init()
+        pygame.mixer.set_num_channels(16)
         pygame.display.set_caption(GAME_TITLE)
+        
+
         self.screen = pygame.display.set_mode([WIDTH, HEIGHT])
         self.clock = pygame.time.Clock()
 
@@ -17,9 +22,13 @@ class Game:
 
         self.data = Data()
         self.map = Map()
+        
 
         self.playing = False
         self.main_menu()
+
+    def play_fx(self):
+        pygame.mixer.music.play(loops= -1)
 
     def load_data(self):
         self.all_sprites = pygame.sprite.Group()
@@ -122,15 +131,17 @@ class Game:
 
 
     def start_game(self):
-        self.level = 1
+        self.level = 6 #TODO:
         self.score = 0
         self.load_data()
+        pygame.mixer.music.play(loops= -1)
         self.run()
 
     def next_level(self):
         self.level += 1
         self.reload_data()
         self.player.teleport(self.map.player_entry_point)
+        pygame.mixer.music.play(loops= -1)
         self.run()
 
     def run(self):
@@ -156,6 +167,7 @@ class Game:
         self.bullets.update()
 
         if len(self.mobs) == 0:
+            pygame.mixer.music.pause()
             self.next_level()
 
     def draw(self):
@@ -203,6 +215,7 @@ class Game:
         self.screen.blit(self.player.weapon_img, (5, HEIGHT - 47))
 
     def main_menu(self):
+        
         title_text = self.large_font.render('MOUNTAIN PEW', True, YELLOW)
         instructions_text = self.small_font.render(
             "Press any key to START", True, WHITE)
@@ -227,11 +240,11 @@ class Game:
                     quit()
                 if event.type == pygame.KEYDOWN:
                     in_main_menu = False
+                    self.data.menu_selection_fx.play()
                     self.start_game()
 
     def game_over(self):
-        # pygame.mixer.music.stop()
-        # self.game_over_fx.play()
+        pygame.mixer.music.fadeout(3000)
         title_text = self.large_font.render('GAME OVER', True, YELLOW)
         score_text = self.small_font.render(
             f"Score: {self.score} [Press any key]", True, WHITE)
@@ -248,7 +261,8 @@ class Game:
         pygame.display.flip()
 
         in_game_over = True
-        pygame.time.delay(3000)
+        pygame.time.delay(2000)
+
         while in_game_over:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -256,6 +270,7 @@ class Game:
                     quit()
                 if event.type == pygame.KEYDOWN:
                     in_game_over = False
+                    self.data.menu_selection_fx.play()
                     self.main_menu()
 
 

@@ -8,11 +8,6 @@ from spritesheet import Spritesheet
 
 class Data():
     def __init__(self):
-        pygame.mixer.pre_init(44100, -16, 2, 1024)
-        pygame.init()
-        pygame.mixer.init()
-        pygame.mixer.set_num_channels(16)
-        self.screen = pygame.display.set_mode([WIDTH, HEIGHT])
         self.root_folder = path.dirname(__file__)
         self.img_folder = path.join(self.root_folder, "img")
         self.fx_folder = path.join(self.root_folder, "fx")
@@ -105,12 +100,24 @@ class Data():
 
     def load_fx(self):
 
-        self.walk_fx = []
-        walk_list = list(range(0, 10))
-        for step in walk_list:
-            fx = pygame.mixer.Sound(
-                path.join(self.fx_folder, f'step{step}.ogg'))
-            self.walk_fx.append(fx)
+        # MUSIC
+        self.music_loop = pygame.mixer.music.load(path.join(self.fx_folder, MUSIC_LOOP)) 
 
-        self.gun_sound = pygame.mixer.Sound(
+        # FX
+        self.bullet_fx = pygame.mixer.Sound(
             path.join(self.fx_folder, WEAPONS['GUN']['FX']))
+
+        self.weapon_fx = pygame.mixer.Sound(
+            path.join(self.fx_folder, WEAPONS['GENERIC']['FX']))
+        
+        self.menu_selection_fx = pygame.mixer.Sound(
+            path.join(self.fx_folder, MENU_SELECTION_FX))
+        
+        self.dead_fx = pygame.mixer.Sound(
+            path.join(self.fx_folder, DEAD_FX))
+
+        self.heal_fx = pygame.mixer.Sound(
+            path.join(self.fx_folder, ITEMS['HEALTHPACK']['FX']))
+
+        self.powerup_fx = pygame.mixer.Sound(
+            path.join(self.fx_folder, ITEMS['SPEEDUP']['FX']))

@@ -1,4 +1,4 @@
-# colors
+# Colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (200, 100, 100)
@@ -11,20 +11,29 @@ ORANGE = (200, 150, 100)
 DARKORANGE = (100, 75, 50)
 PURPLE = (182, 56, 157)
 DARKGREY = (45, 45, 45)
-GROUND = (201, 152, 105)
 
-# deprecated
+GROUND = (201, 152, 105)
 WALL = (49, 36, 26)
 
-# game settings
+# Game Settings
+GAME_TITLE = "Pew Pew Pew"
 WIDTH = 1428
 HEIGHT = 882
 FPS = 60
-GAME_TITLE = "Pew Pew Pew"
 
-# map
+
+# Map
 TILESIZE = 42
 KEY_COLOR = (94, 129, 162)
+
+# Generic FX
+MENU_SELECTION_FX = 'selection.wav'
+
+MUSIC_LOOP = 'music_loop.wav'
+
+DEAD_FX = 'dead.wav'
+
+# Mobs
 
 DRAG = 10
 AVOID_RADIUS = 50
@@ -49,7 +58,7 @@ MOBS = {
         'IMG': (19, 2),
         'WEAPON_NAME': 'GUN',
         'MAX_SPEED': 100,
-        'ACCELERATION': 2000,
+        'ACCELERATION': 1000,
     },
 
     'BEE': {
@@ -85,7 +94,6 @@ MOBS = {
         },
 }
 
-
 ITEM_HOVER_SPEED = 0.01
 
 ITEMS = {
@@ -97,12 +105,18 @@ ITEMS = {
 
     'SPEEDUP': {
         'SPEED': 50,
-        'TTL': 3000,
+        'TTL': 5000,
         'IMG': (6, 29),
+        'FX': 'powerup.wav',
     }
 }
 
 WEAPONS = {
+
+    'GENERIC': {
+        'FX': "weapon_pickup.wav",
+    },
+
     'GUN': {
         'FIRING_RATE': 250,
         'SPREAD': 0.1,
@@ -124,7 +138,6 @@ WEAPONS = {
         'COLOR': RED,
         'SIZE': 8,
         'AMMO_PER_SHOT': 1,
-        'FX': "papapapa.wav",
         'IMG': "machinegun.png"
     },
     'SHOTGUN': {
@@ -136,7 +149,6 @@ WEAPONS = {
         'COLOR': RED,
         'SIZE': 8,
         'AMMO_PER_SHOT': 10,
-        'FX': "kaboom.wav",
         'IMG': "shotgun.png"
     },
 
@@ -149,7 +161,6 @@ WEAPONS = {
         'COLOR': RED,
         'SIZE': 10,
         'AMMO_PER_SHOT': 1,
-        'FX': "kaboom.wav",
         'IMG': "deagle.png"
     },
 
@@ -162,7 +173,6 @@ WEAPONS = {
         'COLOR': RED,
         'SIZE': 10,
         'AMMO_PER_SHOT': 3,
-        'FX': "kaboom.wav",
         'IMG': "assault.png"
     },
 }

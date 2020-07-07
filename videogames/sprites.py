@@ -107,6 +107,7 @@ class Mob(pygame.sprite.Sprite):
         if self.health <= 0:
             self.health = 0
             self.game.score += self.mob_score
+            self.data.dead_fx.play()
             self.kill()
 
     def draw_health(self):
@@ -149,7 +150,7 @@ class Mob(pygame.sprite.Sprite):
                 weapon['SIZE'],
                 target_group
             )
-            self.data.gun_sound.play()
+            self.data.bullet_fx.play().set_volume(0.15)
         self.last_shot_time = pygame.time.get_ticks()
 
 
@@ -186,6 +187,9 @@ class Player(Mob):
         self.position.y = new_position.y
         self.rect.x = self.position.x
         self.rect.y = self.position.y
+        
+        # Avoiding speed buff bug when picking a buff before teleporting
+        self.max_speed = MOBS['PLAYER']['MAX_SPEED']
 
     def handle_input(self):
         mouse = pygame.mouse.get_pressed()
@@ -205,7 +209,6 @@ class Player(Mob):
             vy = 1
 
         self.desired_velocity = Vector2(vx, vy)
-
 
 
 class Bee(Mob):
@@ -397,6 +400,7 @@ class HealthPack(Item):
         heal = ITEMS[self.kind]['HEAL']
         if picker.health < picker.max_health:
             picker.health = min(picker.health + heal, picker.max_health)
+            self.data.heal_fx.play()
             self.kill()
 
 
@@ -421,6 +425,7 @@ class SpeedUp(Item):
 
         ttl = ITEMS[self.kind]['TTL']
         self.stop_working_at = pygame.time.get_ticks() + ttl
+        self.data.powerup_fx.play()
         self.rect.x = -10000000
 
 
@@ -459,6 +464,7 @@ class Weapon(pygame.sprite.Sprite):
         if picker.weapon_name != self.weapon_name:
             self.picker.weapon_name = self.weapon_name
             self.picker.weapon_img = self.image
+            self.data.weapon_fx.play()
             self.kill()
 
 class Machinegun(Weapon):

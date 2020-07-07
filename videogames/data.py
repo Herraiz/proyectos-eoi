@@ -77,21 +77,13 @@ class Data():
             KEY_COLOR
         )
 
-        # Floor and walls
-        self.floor_img = sprites.image_at(
-                    FLOOR_SPRITE[0],
-                    FLOOR_SPRITE[1],
-                    TILESIZE,
-                    2,
-                    KEY_COLOR
-        )
-
-        self.wall_img = sprites.image_at(
-                    WALL_SPRITE[0],
-                    WALL_SPRITE[1],
-                    TILESIZE,
-                    2,
-                    KEY_COLOR
+        name = 'SPIDER'
+        self.spider_img = sprites.image_at(
+            MOBS[name]['IMG'][0],
+            MOBS[name]['IMG'][1],
+            TILESIZE,
+            2,
+            KEY_COLOR
         )
 
         # Weapons
@@ -122,14 +114,3 @@ class Data():
 
         self.gun_sound = pygame.mixer.Sound(
             path.join(self.fx_folder, WEAPONS['GUN']['FX']))
-
-
-# TEST
-
-# data = Data()
-
-# while True:
-#     print('Reproduciendo')
-#     for i in range(len(data.walk_fx)):
-#         data.walk_fx[i].play()
-#         pygame.time.delay(300) # good time

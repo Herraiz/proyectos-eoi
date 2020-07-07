@@ -18,10 +18,6 @@ class Game:
         self.data = Data()
         self.map = Map()
 
-        self.player = None
-        self.player_current_weapon = 'GUN'
-        self.player_current_weapon_img = self.data.gun_img
-
         self.playing = False
         self.main_menu()
 
@@ -46,9 +42,7 @@ class Game:
 
         self.player = Player(self, self.map.player_entry_point,
                     PLAYER_MAX_SPEED, PLAYER_ACCELERATION,
-                    PLAYER_HEALTH, self.data.player_img, self.map, 
-                    self.player_current_weapon, 
-                    self.player_current_weapon_img)
+                    PLAYER_HEALTH, self.data.player_img, self.map)
 
     def reload_data(self):
         self.all_sprites = pygame.sprite.Group()
@@ -67,13 +61,8 @@ class Game:
 
         self.map.create_sprites_from_map_data(self)
 
-        self.player.respawn(self.map.player_entry_point)
-
-
-
 
     def populate_map(self):
-        print(f'{self.player_current_weapon}')
 
         # Player
         x, y = self.map.get_empty_position()
@@ -90,6 +79,12 @@ class Game:
         for _ in range(1 + increase_towers):
             x, y = self.map.get_empty_position()
             self.map.map_data[y][x] = "T"
+
+        # Spider
+        increase_spiders = round(self.level * 0.2)
+        for _ in range(1 + increase_spiders):
+            x, y = self.map.get_empty_position()
+            self.map.map_data[y][x] = "X"
 
         increase_utility = round(self.level * 0.03)
 
@@ -127,7 +122,7 @@ class Game:
 
 
     def start_game(self):
-        self.level = 20
+        self.level = 1
         self.score = 0
         self.load_data()
         self.run()
@@ -135,6 +130,7 @@ class Game:
     def next_level(self):
         self.level += 1
         self.reload_data()
+        self.player.teleport(self.map.player_entry_point)
         self.run()
 
     def run(self):

@@ -103,33 +103,45 @@ class Map():
         for row, tiles in enumerate(self.map_data):
             for col, tile in enumerate(tiles):
                 position = Vector2(col, row) * TILESIZE
-                # if tile == "0":
-                #     Floor(game, col, row, self.data.floor_img)
+                
                 if tile == '1':
-                    Wall(game, col, row, self.data.wall_img)
+                    Wall(game, col, row)
 
                 if tile == 'P':
                     self.player_entry_point = position
                     
                 if tile == "b":
+                    name = 'BEE'
                     Bee(
                         game,
                         position,
-                        BEE_MAX_SPEED,
-                        BEE_ACCELERATION,
-                        BEE_HEALTH,
-                        BEE_HIT_DAMAGE,
+                        MOBS[name]['MAX_SPEED'],
+                        MOBS[name]['ACCELERATION'],
+                        MOBS[name]['HEALTH'],
+                        MOBS[name]['HIT_DAMAGE'],
                         self.data.bee_img
                     )
 
                 if tile == "B":
+                    name = 'BEE_NEST'
                     BeeNest(
                         game,
                         position,
-                        BEE_NEST_HEALTH,
-                        BEE_NEST_SPAWN_FREQUENCY + randint(2000, 5000),
-                        BEE_NEST_MAX_POPULATION,
+                        MOBS[name]['HEALTH'],
+                        MOBS[name]['SPAWN_FREQUENCY'] + randint(2000, 5000),
+                        MOBS[name]['MAX_POPULATION'],
                         self.data.bee_nest_img
+                    )
+                
+                if tile == "X":
+                    name = 'SPIDER'
+                    Spider(game,
+                            position,
+                            MOBS[name]['MAX_SPEED'],
+                            MOBS[name]['ACCELERATION'],
+                            MOBS[name]['HEALTH'],
+                            MOBS[name]['HIT_DAMAGE'],
+                            self.data.spider_img
                     )
 
                 if tile == "T":

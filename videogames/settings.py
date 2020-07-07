@@ -1,5 +1,3 @@
-
-
 # colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -14,6 +12,8 @@ DARKORANGE = (100, 75, 50)
 PURPLE = (182, 56, 157)
 DARKGREY = (45, 45, 45)
 GROUND = (201, 152, 105)
+
+# deprecated
 WALL = (49, 36, 26)
 
 # game settings
@@ -74,6 +74,15 @@ MOBS = {
         'VISION_RADIUS': 250,
         'IMG': (28, 23)
     },
+
+    'SPIDER': {
+        'HEALTH': 100,
+        'IMG': (20, 15),
+        'HIT_DAMAGE': 25,
+        'MAX_SPEED': 25,
+        'ACCELERATION': 1000,
+        'VISION_RADIUS': 250,
+        },
 }
 
 
@@ -97,9 +106,9 @@ WEAPONS = {
     'GUN': {
         'FIRING_RATE': 250,
         'SPREAD': 0.1,
-        'TTL':  1200,
+        'TTL':  1500,
         'SPEED': 300,
-        'DAMAGE': 5,
+        'DAMAGE': 10,
         'COLOR': RED,
         'SIZE': 10,
         'AMMO_PER_SHOT': 1,
@@ -109,9 +118,9 @@ WEAPONS = {
     'MACHINEGUN': {
         'FIRING_RATE': 100,
         'SPREAD': 0.1,
-        'TTL':  1200,
+        'TTL':  1500,
         'SPEED': 400,
-        'DAMAGE': 3,
+        'DAMAGE': 5,
         'COLOR': RED,
         'SIZE': 8,
         'AMMO_PER_SHOT': 1,
@@ -119,7 +128,7 @@ WEAPONS = {
         'IMG': "machinegun.png"
     },
     'SHOTGUN': {
-        'FIRING_RATE': 2000,
+        'FIRING_RATE': 750,
         'SPREAD': 0.5,
         'TTL':  1000,
         'SPEED': 300,
@@ -157,6 +166,3 @@ WEAPONS = {
         'IMG': "assault.png"
     },
 }
-
-FLOOR_SPRITE =  (7, 23)
-WALL_SPRITE = (2, 3)

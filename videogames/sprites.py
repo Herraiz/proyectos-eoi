@@ -9,7 +9,7 @@ from data import Data
 
 
 class Wall(pygame.sprite.Sprite):
-    def __init__(self, game, x, y, image):
+    def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.walls
         pygame.sprite.Sprite.__init__(self, self.groups)
         self.game = game
@@ -155,14 +155,14 @@ class Mob(pygame.sprite.Sprite):
 
 class Player(Mob):
     def __init__(self, game, position, max_speed,
-                 acceleration, max_health, image, map, weapon, weapon_img):
+                 acceleration, max_health, image, map):
 
         super().__init__(game, (game.all_sprites, game.players), position,
                          max_speed, acceleration, max_health, image)
         self.map = map
         self.max_speed = max_speed
-        self.weapon_name = weapon
-        self.weapon_img = weapon_img
+        self.weapon_name = 'GUN'
+        self.weapon_img = self.data.gun_img
 
     def update(self):
         self.handle_input()
@@ -181,16 +181,11 @@ class Player(Mob):
             self.kill()
             self.game.game_over()
 
-    def respawn(self, new_position):
+    def teleport(self, new_position):
         self.position.x = new_position.x
         self.position.y = new_position.y
         self.rect.x = self.position.x
         self.rect.y = self.position.y
-        print('Teleport complete')
-        # Player(self.game, new_position, PLAYER_MAX_SPEED, 
-        # PLAYER_ACCELERATION, PLAYER_HEALTH, self.data.player_img, self.map,
-        # self.weapon_name, self.weapon_img)
-        # self.kill()
 
     def handle_input(self):
         mouse = pygame.mouse.get_pressed()
@@ -293,6 +288,37 @@ class Tower(Mob):
 
         if 0 < towards_player.magnitude() < vision_radius:
             self.shoot_at(target.x, target.y, self.game.players)
+
+class Spider(Mob):
+    def __init__(self, game, position, max_speed,
+                 acceleration, max_health, damage, image, groups=()):
+
+        super().__init__(game, (game.all_sprites, game.mobs) + groups,
+                         position, max_speed, acceleration, max_health, image)
+
+        self.damage = damage
+        self.mob_score = 100
+
+    def update(self):
+        vision_radius = MOBS['SPIDER']['VISION_RADIUS']
+
+        towards_player = self.game.player.position - self.position
+        if towards_player.magnitude() <= vision_radius:
+            self.desired_velocity = towards_player
+        else:
+            self.desired_velocity = Vector2(uniform(-1, 1),
+                                            uniform(-1, 1))
+        self.avoid_mobs()
+        self.move()
+
+        if pygame.sprite.collide_rect(self, self.game.player):
+            self.game.player.receive_damage(self.damage * self.game.dt)
+
+        # Kill the mobs outside the window
+        if self.position.x > WIDTH or self.position.x < 0:
+            self.kill()
+        if self.position.y > HEIGHT or self.position.y < 0:
+            self.kill()
 
 
 class Bullet(pygame.sprite.Sprite):

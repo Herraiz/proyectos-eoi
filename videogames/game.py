@@ -1,8 +1,9 @@
 import pygame
+
+from data import Data
+from map import Map
 from settings import *
 from sprites import *
-from map import Map
-from data import Data
 
 
 class Game:
@@ -12,7 +13,6 @@ class Game:
         pygame.mixer.init()
         pygame.mixer.set_num_channels(16)
         pygame.display.set_caption(GAME_TITLE)
-        
 
         self.screen = pygame.display.set_mode([WIDTH, HEIGHT])
         self.clock = pygame.time.Clock()
@@ -22,11 +22,9 @@ class Game:
 
         self.data = Data()
         self.map = Map()
-        
 
         self.playing = False
         self.main_menu()
-
 
     def load_data(self):
         self.all_sprites = pygame.sprite.Group()
@@ -46,12 +44,14 @@ class Game:
 
         self.map.create_sprites_from_map_data(self)
 
-
         self.player = Player(self, self.map.player_entry_point,
-                    PLAYER_MAX_SPEED, PLAYER_ACCELERATION,
-                    PLAYER_HEALTH, self.data.player_img, self.map)
+                             PLAYER_MAX_SPEED, PLAYER_ACCELERATION,
+                             PLAYER_HEALTH, self.data.player_img, self.map)
 
     def reload_data(self):
+        
+        ''' Load all data except the player, used for pass to the next level  '''
+
         self.all_sprites = pygame.sprite.Group()
         self.walls = pygame.sprite.Group()
         self.floor = pygame.sprite.Group()
@@ -68,8 +68,10 @@ class Game:
 
         self.map.create_sprites_from_map_data(self)
 
-
     def populate_map(self):
+
+        ''' Populate each map considering the level of the game. 
+        We control here the number of mobs and weapons per level '''
 
         # Player
         x, y = self.map.get_empty_position()
@@ -105,13 +107,13 @@ class Game:
             x, y = self.map.get_empty_position()
             self.map.map_data[y][x] = "s"
 
-        ## Weapons
+        # Weapons
 
         # Machinegun
         if self.level >= 6 and self.level <= 9:
             x, y = self.map.get_empty_position()
             self.map.map_data[y][x] = "M"
-    
+
         # Shotgun
         if self.level >= 10 and self.level <= 14:
             x, y = self.map.get_empty_position()
@@ -120,36 +122,40 @@ class Game:
         # Deagle
         if self.level >= 15 and self.level <= 19:
             x, y = self.map.get_empty_position()
-            self.map.map_data[y][x] = "D"  
+            self.map.map_data[y][x] = "D"
 
         # Assault
-        if self.level >= 15:
+        if self.level >= 19:
             x, y = self.map.get_empty_position()
-            self.map.map_data[y][x] = "A" 
-
+            self.map.map_data[y][x] = "A"
 
     def start_game(self):
-        self.level = 21 #TODO:
+
+        ''' This will start the game and music. For testing options, you 
+        can change self.level value and start on other levels '''
+
+        self.level = 1
         self.score = 0
         self.load_data()
-        pygame.mixer.music.play(loops= -1)
+        pygame.mixer.music.play(loops=-1)
         ahora = pygame.time.get_ticks()
         print(f'Primero: {ahora}')
         self.run()
 
     def next_level(self):
+
+        ''' This function starts the next game, increasing the level by 1 '''
+
         self.level += 1
         self.reload_data()
         self.player.teleport(self.map.player_entry_point)
-        pygame.mixer.music.play(loops= -1, start=self.music_pos)
-
+        pygame.mixer.music.play(loops=-1, start=self.music_pos)
         self.run()
 
     def run(self):
-        self.draw()
+        ''' Principal loop of the game '''
+
         self.playing = True
-        despues = pygame.time.get_ticks()
-        print(f'Segundo: {despues}')
         while self.playing:
             self.dt = self.clock.tick(FPS) / 1000
             self.events()
@@ -157,12 +163,19 @@ class Game:
             self.draw()
 
     def events(self):
+
+        ''' Catching all the events in the game '''
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
 
     def update(self):
+
+        ''' Each run loop, update all sprites group individually. 
+        When the last mob is killed, the next_level function is invoked '''
+
         self.players.update()
         self.floor.update()
         self.walls.update()
@@ -175,6 +188,8 @@ class Game:
             self.next_level()
 
     def draw(self):
+
+        ''' Drawing all groups one per one'''
 
         self.screen.fill(GROUND)
         self.players.draw(self.screen)
@@ -189,9 +204,11 @@ class Game:
 
         self.draw_game_ui()
 
-        pygame.display.update()
+        pygame.display.flip()
 
     def draw_game_ui(self):
+
+        '''Drawing the game ui, with health, score, current level and weapon '''
 
         # Health
         health = self.player.health / self.player.max_health
@@ -219,7 +236,10 @@ class Game:
         self.screen.blit(self.player.weapon_img, (5, HEIGHT - 47))
 
     def main_menu(self):
-        
+
+        ''' This define the main menu of the game'''
+
+        # Drawing
         title_text = self.large_font.render('MOUNTAIN PEW', True, YELLOW)
         instructions_text = self.small_font.render(
             "Press any key to START", True, WHITE)
@@ -234,7 +254,6 @@ class Game:
                           HEIGHT - 300))
 
         pygame.display.flip()
-
         in_main_menu = True
 
         while in_main_menu:
@@ -248,7 +267,13 @@ class Game:
                     self.start_game()
 
     def game_over(self):
+
+        ''' Game over menu '''
+
+        # Music fadeout
         pygame.mixer.music.fadeout(3000)
+
+        # Drawing screen, title and score
         title_text = self.large_font.render('GAME OVER', True, YELLOW)
         score_text = self.small_font.render(
             f"Score: {self.score} [Press any key]", True, WHITE)
@@ -265,7 +290,6 @@ class Game:
         pygame.display.flip()
 
         in_game_over = True
-        pygame.time.delay(2000)
 
         while in_game_over:
             for event in pygame.event.get():
@@ -278,5 +302,6 @@ class Game:
                     self.main_menu()
 
 
-game = Game()
-game.main_menu()
+if __name__ == "__main__":
+    game = Game()
+    game.main_menu()

@@ -7,6 +7,9 @@ from spritesheet import Spritesheet
 
 
 class Data():
+
+    ''' Class for loading all img and fx of the game '''
+
     def __init__(self):
         self.root_folder = path.dirname(__file__)
         self.img_folder = path.join(self.root_folder, "img")

@@ -9,6 +9,7 @@ from data import Data
 
 
 class Wall(pygame.sprite.Sprite):
+    ''' Walls of the game'''
     def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.walls
         pygame.sprite.Sprite.__init__(self, self.groups)
@@ -22,20 +23,8 @@ class Wall(pygame.sprite.Sprite):
         self.rect.y = y * TILESIZE
 
 
-class Floor(pygame.sprite.Sprite):
-    def __init__(self, game, x, y, image):
-        self.groups = game.all_sprites, game.floor
-        pygame.sprite.Sprite.__init__(self, self.groups)
-        self.game = game
-        self.image = image
-        self.rect = self.image.get_rect()
-        self.x = x
-        self.y = y
-        self.rect.x = x * TILESIZE
-        self.rect.y = y * TILESIZE
-
-
 class Mob(pygame.sprite.Sprite):
+    '''Parent class for Mobs '''
     def __init__(self, game, groups, position, max_speed,
                  acceleration, max_health, image):
 
@@ -59,7 +48,7 @@ class Mob(pygame.sprite.Sprite):
         self.mob_score = 0
         self.spawn_time = pygame.time.get_ticks()
 
-        self.last_shot_time = 0  # TODO: ESTO IRÁ EN LA CLASS WEAPON FUTURA
+        self.last_shot_time = 0
 
     def update(self):
         pass

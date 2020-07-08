@@ -16,7 +16,7 @@ GROUND = (201, 152, 105)
 WALL = (49, 36, 26)
 
 # Game Settings
-GAME_TITLE = "Pew Pew Pew"
+GAME_TITLE = "Mountain Pew"
 WIDTH = 1428
 HEIGHT = 882
 FPS = 60
@@ -33,7 +33,7 @@ MUSIC_LOOP = 'music_loop.mp3'
 
 DEAD_FX = 'dead.wav'
 
-# Mobs
+# Mobs #TODO: Deprecated?
 
 DRAG = 10
 AVOID_RADIUS = 50

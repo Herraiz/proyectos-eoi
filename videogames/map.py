@@ -3,19 +3,29 @@ from os import path
 
 from pygame import Vector2
 
-
-from sprites import *
-from settings import *
 from data import Data
+from settings import *
+from sprites import *
 
 
 class Map():
+
+    ''' Map Class. You have 3 ways of map generation:
+    1) Loading from a txt file
+    2) Carve Cave Cellular Automata way (procedural)
+    3) Carve Cave Drunken Diggers (procedural)
+    # We are currently using the third way.
+    # You can modify this on game.py - load and reload functions '''
+
     def __init__(self):
         self.map_data = []
         self.data = Data()
         self.player_entry_point = Vector2(0, 0)
 
     def load_from_file(self, filename):
+        
+        ''' Loading map from a txt file '''
+        
         game_folder = path.dirname(__file__)
         data_folder = path.join(game_folder, 'data')
         with open(path.join(data_folder, filename), 'r') as file:
@@ -23,6 +33,10 @@ class Map():
                 self.map_data.append(line)
 
     def carve_cave_cellular_automata(self, game, screen_width, screen_height):
+
+        ''' Procedural way of creating a map, using mathemathical model 
+        of cellular automata theory. At the end, you call the smooth_map function'''
+
         width = screen_width // TILESIZE
         height = screen_height // TILESIZE
         self.width = width
@@ -41,6 +55,9 @@ class Map():
         self.smooth_map(iterations, width, height)
 
     def smooth_map(self, iterations, width, height):
+
+        ''' Smoothing map function '''
+
         neighbour_deltas = [(x, y) for x in range(-1, 2)
                             for y in range(-1, 2) if x != 0 or y != 0]
         for _ in range(iterations):
@@ -59,6 +76,10 @@ class Map():
             self.map_data = tmp_map.copy()
 
     def carve_cave_drunken_diggers(self, game, screen_width, screen_height):
+
+        ''' Dungeon generation algorithm that makes sure 
+        to connect all rooms on the map '''
+
         width = screen_width // TILESIZE
         height = screen_height // TILESIZE
         self.width = width
@@ -91,6 +112,9 @@ class Map():
             self.map_data = tmp_map.copy()
 
     def get_empty_position(self):
+
+        ''' Looks for an empty position on the map '''
+
         is_empty = False
         while is_empty == False:
             x = random.randint(1, self.width - 1)
@@ -98,18 +122,23 @@ class Map():
             if self.map_data[y][x] == "0":
                 return (x, y)
 
-
     def create_sprites_from_map_data(self, game):
+
+        ''' Mob, player, items and weapons generation '''
+
         for row, tiles in enumerate(self.map_data):
             for col, tile in enumerate(tiles):
                 position = Vector2(col, row) * TILESIZE
-                
+
+                # Walls
                 if tile == '1':
                     Wall(game, col, row)
-
+                
+                # Player (only entry point)
                 if tile == 'P':
                     self.player_entry_point = position
-                    
+
+                # Bees
                 if tile == "b":
                     name = 'BEE'
                     Bee(
@@ -122,6 +151,7 @@ class Map():
                         self.data.bee_img
                     )
 
+                # Deprecated bee nests
                 if tile == "B":
                     name = 'BEE_NEST'
                     BeeNest(
@@ -132,18 +162,20 @@ class Map():
                         MOBS[name]['MAX_POPULATION'],
                         self.data.bee_nest_img
                     )
-                
+
+                # Spiders
                 if tile == "X":
                     name = 'SPIDER'
                     Spider(game,
-                            position,
-                            MOBS[name]['MAX_SPEED'],
-                            MOBS[name]['ACCELERATION'],
-                            MOBS[name]['HEALTH'],
-                            MOBS[name]['HIT_DAMAGE'],
-                            self.data.spider_img
-                    )
+                           position,
+                           MOBS[name]['MAX_SPEED'],
+                           MOBS[name]['ACCELERATION'],
+                           MOBS[name]['HEALTH'],
+                           MOBS[name]['HIT_DAMAGE'],
+                           self.data.spider_img
+                           )
 
+                # Towers
                 if tile == "T":
                     Tower(
                         game,
@@ -151,12 +183,14 @@ class Map():
                         self.data.tower_img
                     )
 
+                # Items
                 if tile == "h":
                     HealthPack(game, position)
-
+                    
                 if tile == "s":
                     SpeedUp(game, position)
 
+                # Weapons
                 if tile == "M":
                     Machinegun(game, position)
 

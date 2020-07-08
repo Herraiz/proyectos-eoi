@@ -27,8 +27,6 @@ class Game:
         self.playing = False
         self.main_menu()
 
-    def play_fx(self):
-        pygame.mixer.music.play(loops= -1)
 
     def load_data(self):
         self.all_sprites = pygame.sprite.Group()
@@ -131,21 +129,27 @@ class Game:
 
 
     def start_game(self):
-        self.level = 6 #TODO:
+        self.level = 21 #TODO:
         self.score = 0
         self.load_data()
         pygame.mixer.music.play(loops= -1)
+        ahora = pygame.time.get_ticks()
+        print(f'Primero: {ahora}')
         self.run()
 
     def next_level(self):
         self.level += 1
         self.reload_data()
         self.player.teleport(self.map.player_entry_point)
-        pygame.mixer.music.play(loops= -1)
+        pygame.mixer.music.play(loops= -1, start=self.music_pos)
+
         self.run()
 
     def run(self):
+        self.draw()
         self.playing = True
+        despues = pygame.time.get_ticks()
+        print(f'Segundo: {despues}')
         while self.playing:
             self.dt = self.clock.tick(FPS) / 1000
             self.events()
@@ -167,7 +171,7 @@ class Game:
         self.bullets.update()
 
         if len(self.mobs) == 0:
-            pygame.mixer.music.pause()
+            self.music_pos = pygame.mixer.music.get_pos() / 1000
             self.next_level()
 
     def draw(self):

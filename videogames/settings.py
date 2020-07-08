@@ -29,7 +29,7 @@ KEY_COLOR = (94, 129, 162)
 # Generic FX
 MENU_SELECTION_FX = 'selection.wav'
 
-MUSIC_LOOP = 'music_loop.wav'
+MUSIC_LOOP = 'music_loop.mp3'
 
 DEAD_FX = 'dead.wav'
 
@@ -55,7 +55,7 @@ BEE_NEST_HEALTH = 100
 MOBS = {
     'PLAYER': {
         'HEALTH': 100,
-        'IMG': (19, 2),
+        'IMG': (19, 0),
         'WEAPON_NAME': 'GUN',
         'MAX_SPEED': 100,
         'ACCELERATION': 1000,
@@ -172,7 +172,7 @@ WEAPONS = {
         'DAMAGE': 10,
         'COLOR': RED,
         'SIZE': 10,
-        'AMMO_PER_SHOT': 3,
+        'AMMO_PER_SHOT': 1,
         'IMG': "assault.png"
     },
 }

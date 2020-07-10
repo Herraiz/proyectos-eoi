@@ -101,6 +101,15 @@ class Data():
         self.assault_img = pygame.image.load(path.join(self.img_folder, 
                                         WEAPONS['ASSAULT']['IMG'])).convert_alpha()
 
+        # Menu
+
+        self.main_menu_img = pygame.image.load(path.join(self.img_folder, 
+                                        MENU_IMG)).convert()
+
+        self.game_over_img = pygame.image.load(path.join(self.img_folder, 
+                                        GAME_OVER_IMG)).convert()
+
+
     def load_fx(self):
 
         # MUSIC

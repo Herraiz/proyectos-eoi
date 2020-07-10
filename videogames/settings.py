@@ -26,8 +26,12 @@ FPS = 60
 TILESIZE = 42
 KEY_COLOR = (94, 129, 162)
 
-# Generic FX
+# Generic FX / IMG
 MENU_SELECTION_FX = 'selection.wav'
+
+MENU_IMG = 'main_menu.png'
+
+GAME_OVER_IMG = 'game_over.png'
 
 MUSIC_LOOP = 'music_loop.mp3'
 

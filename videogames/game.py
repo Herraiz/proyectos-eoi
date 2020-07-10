@@ -17,8 +17,8 @@ class Game:
         self.screen = pygame.display.set_mode([WIDTH, HEIGHT])
         self.clock = pygame.time.Clock()
 
-        self.large_font = pygame.font.SysFont('arial', 100)
-        self.small_font = pygame.font.SysFont("arial", 32)
+        self.small_font = pygame.font.SysFont("TW Cent Mt", 32)
+        self.medium_font = pygame.font.SysFont("TW Cent Mt", 56)
 
         self.data = Data()
         self.map = Map()
@@ -108,7 +108,7 @@ class Game:
         # Weapons
 
         # Machinegun
-        if self.level >= 6 and self.level <= 9:
+        if self.level >= 5 and self.level <= 9:
             x, y = self.map.get_empty_position()
             self.map.map_data[y][x] = "M"
 
@@ -132,7 +132,7 @@ class Game:
         ''' This will start the game and music. For testing options, you 
         can change self.level value and start on other levels '''
 
-        self.level = 1
+        self.level = 16
         self.score = 0
         self.load_data()
         pygame.mixer.music.play(loops=-1)
@@ -221,12 +221,12 @@ class Game:
         # Score
         score_text = self.small_font.render(
             f'- Score: {self.score}', True, WHITE)
-        self.screen.blit(score_text, (width + 173, 4))
+        self.screen.blit(score_text, (width + 135, 10))
 
         # Level
         level_text = self.small_font.render(
             f'- Level: {self.level}', True, WHITE)
-        self.screen.blit(level_text, (width + 22, 4))
+        self.screen.blit(level_text, (width + 22, 10))
 
         # Weapon
         self.screen.blit(self.player.weapon_img, (5, HEIGHT - 47))
@@ -235,19 +235,8 @@ class Game:
 
         ''' This define the main menu of the game'''
 
-        # Drawing
-        title_text = self.large_font.render('MOUNTAIN PEW', True, YELLOW)
-        instructions_text = self.small_font.render(
-            "Press any key to START", True, WHITE)
-
-        self.screen.fill(DARKGREY)
-        self.screen.blit(title_text,
-                         (WIDTH // 2 - title_text.get_rect().width // 2,
-                          HEIGHT - 550 - title_text.get_rect().height // 2))
-
-        self.screen.blit(instructions_text,
-                         (WIDTH // 2 - instructions_text.get_rect().width // 2,
-                          HEIGHT - 300))
+        # Draw
+        self.screen.blit(self.data.main_menu_img, (0, 0))
 
         pygame.display.flip()
         in_main_menu = True
@@ -269,19 +258,16 @@ class Game:
         # Music fadeout
         pygame.mixer.music.fadeout(3000)
 
-        # Drawing screen, title and score
-        title_text = self.large_font.render('GAME OVER', True, YELLOW)
-        score_text = self.small_font.render(
-            f"Score: {self.score} [Press any key]", True, WHITE)
+        # Draw
+        self.screen.blit(self.data.game_over_img, (0, 0))
 
-        self.screen.fill(DARKGREY)
-        self.screen.blit(title_text,
-                         (WIDTH // 2 - title_text.get_rect().width // 2,
-                          HEIGHT - 550 - title_text.get_rect().height // 2))
+        score_text = self.medium_font.render(
+            f"Score: {self.score}", True, WHITE)
+
 
         self.screen.blit(score_text,
                          (WIDTH // 2 - score_text.get_rect().width // 2,
-                          HEIGHT - 300))
+                          HEIGHT - 545))
 
         pygame.display.flip()
 

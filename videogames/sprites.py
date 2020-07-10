@@ -25,26 +25,28 @@ class Wall(pygame.sprite.Sprite):
 
 class Mob(pygame.sprite.Sprite):
     '''Parent class for Mobs '''
-    def __init__(self, game, groups, position, max_speed,
-                 acceleration, max_health, image):
+    def __init__(self, game, groups, position, image, name):
 
         self.groups = groups
         pygame.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.data = Data()
+        self.name = name
         self.image = image
         self.rect = self.image.get_rect()
 
-        self.max_speed = max_speed + \
-            uniform(-max_speed * 0.25, max_speed * 0.25)
-        self.acceleration = acceleration
+        base_max_speed = MOBS[self.name]['MAX_SPEED']
+        self.max_speed = base_max_speed + \
+            uniform(-base_max_speed * 0.25, base_max_speed * 0.25)
+        self.acceleration = MOBS[self.name]['ACCELERATION']
+
         self.position = position
         self.rect.topleft = position
         self.desired_velocity = Vector2(0, 0)
         self.velocity = Vector2(0, 0)
         self.avoidance = Vector2(0, 0)
-        self.max_health = max_health
-        self.health = max_health
+        self.max_health = MOBS[self.name]['HEALTH']
+        self.health = self.max_health
         self.mob_score = 0
         self.spawn_time = pygame.time.get_ticks()
 
@@ -114,7 +116,6 @@ class Mob(pygame.sprite.Sprite):
                 if 0 < towards_mob.magnitude() < AVOID_RADIUS:
                     towards_mobs += towards_mob / towards_mob.magnitude()
 
-        # self.avoidance = self.avoidance.lerp(-towards_mobs, self.game.dt)
 
     def shoot_at(self, x, y, target_group):
         weapon = WEAPONS[self.weapon_name]
@@ -144,15 +145,13 @@ class Mob(pygame.sprite.Sprite):
 
 
 class Player(Mob):
-    def __init__(self, game, position, max_speed,
-                 acceleration, max_health, image, map):
+    def __init__(self, game, position, image, map, name):
 
-        super().__init__(game, (game.all_sprites, game.players), position,
-                         max_speed, acceleration, max_health, image)
+        super().__init__(game, (game.all_sprites, game.players), position, image, name)
         self.map = map
-        self.max_speed = max_speed
         self.weapon_name = 'GUN'
         self.weapon_img = self.data.gun_img
+        self.max_speed = MOBS[self.name]['MAX_SPEED'] # We don't use default MOB speed
 
     def update(self):
         self.handle_input()
@@ -177,12 +176,12 @@ class Player(Mob):
         self.rect.x = self.position.x
         self.rect.y = self.position.y
         
-        # Avoiding speed buff bug when picking a buff before teleporting
+        # Avoiding keeping speed buff bug when teleporting
         self.max_speed = MOBS['PLAYER']['MAX_SPEED']
 
     def handle_input(self):
         mouse = pygame.mouse.get_pressed()
-        if mouse[0] or mouse[0] or mouse[0]:
+        if mouse[0]:
             x, y = pygame.mouse.get_pos()
             self.shoot_at(x, y, self.game.mobs)
 
@@ -201,18 +200,18 @@ class Player(Mob):
 
 
 class Bee(Mob):
-    def __init__(self, game, position, max_speed,
-                 acceleration, max_health, damage, image, groups=()):
+    def __init__(self, game, position, image, name, groups=()):
 
         super().__init__(game, (game.all_sprites, game.mobs) + groups,
-                         position, max_speed, acceleration, max_health, image)
+                         position, image, name)
 
-        self.damage = damage
+        self.damage = MOBS[name]['HIT_DAMAGE']
+        self.vision_radius = MOBS[name]['VISION_RADIUS']
         self.mob_score = 10
 
     def update(self):
         towards_player = self.game.player.position - self.position
-        if towards_player.magnitude() <= BEE_VISION_RADIUS:
+        if towards_player.magnitude() <= self.vision_radius:
             self.desired_velocity = towards_player
         else:
             self.desired_velocity = Vector2(uniform(-1, 1),
@@ -230,13 +229,13 @@ class Bee(Mob):
 
 
 class BeeNest(Mob):
-    def __init__(self, game, position, max_health, spawn_frequency, max_population, image):
+    def __init__(self, game, position, image, name):
         super().__init__(game, (game.all_sprites, game.nests,
-                                game.mobs), position, 0, 0, max_health, image)
+                                game.mobs), position, image, name)
 
-        self.spawn_frequency = spawn_frequency
+        self.spawn_frequency = MOBS[name]['SPAWN_FREQUENCY']  + randint(2000, 5000)
         self.last_spawn_time = 0
-        self.max_population = max_population
+        self.max_population = MOBS[name]['MAX_POPULATION']
         self.population = pygame.sprite.Group()
         self.mob_score = 30
 
@@ -254,48 +253,43 @@ class BeeNest(Mob):
                     Vector2(self.position.x, self.position.y) +
                     Vector2(uniform(-TILESIZE, TILESIZE),
                             uniform(-TILESIZE, TILESIZE)),
-                    BEE_MAX_SPEED,
-                    BEE_ACCELERATION,
-                    BEE_HEALTH,
-                    BEE_HIT_DAMAGE,
                     self.data.bee_img,
+                    'BEE',
                     (self.population,)
                 )
             self.last_spawn_time = pygame.time.get_ticks()
 
 
 class Tower(Mob):
-    def __init__(self, game, position, image):
-        max_health = MOBS['TOWER']['HEALTH']
+    def __init__(self, game, position, image, name):
         super().__init__(game, (game.all_sprites, game.mobs),
-                         position, 0, 0, max_health, image)
+                         position, image, name)
 
-        self.weapon_name = MOBS['TOWER']['WEAPON_NAME']
+        self.weapon_name = MOBS[name]['WEAPON_NAME']
+        self.vision_radius = MOBS[name]['VISION_RADIUS']
         self.mob_score = 100
 
     def update(self):
         towards_player = self.game.player.position - self.position
         target = self.game.player.position
-        vision_radius = MOBS['TOWER']['VISION_RADIUS']
 
-        if 0 < towards_player.magnitude() < vision_radius:
+        if 0 < towards_player.magnitude() < self.vision_radius:
             self.shoot_at(target.x, target.y, self.game.players)
 
 class Spider(Mob):
-    def __init__(self, game, position, max_speed,
-                 acceleration, max_health, damage, image, groups=()):
+    def __init__(self, game, position, image, name, groups=()):
 
         super().__init__(game, (game.all_sprites, game.mobs) + groups,
-                         position, max_speed, acceleration, max_health, image)
+                         position, image, name)
 
-        self.damage = damage
+        self.damage = MOBS[name]['HIT_DAMAGE']
+        self.vision_radius = MOBS[name]['VISION_RADIUS']
         self.mob_score = 100
 
     def update(self):
-        vision_radius = MOBS['SPIDER']['VISION_RADIUS']
-
+        
         towards_player = self.game.player.position - self.position
-        if towards_player.magnitude() <= vision_radius:
+        if towards_player.magnitude() <= self.vision_radius:
             self.desired_velocity = towards_player
         else:
             self.desired_velocity = Vector2(uniform(-1, 1),
@@ -401,6 +395,7 @@ class SpeedUp(Item):
             'SPEEDUP'
         )
         self.image = self.data.speedup_img
+        self.speed_buff = ITEMS[self.kind]['SPEED']
         self.picker = None
         self.picker_base_speed = 0
         self.picker_max_speed = 0
@@ -409,8 +404,8 @@ class SpeedUp(Item):
 
         self.picker = picker
 
-        speed_up = ITEMS[self.kind]['SPEED']
-        picker.max_speed += speed_up
+
+        self.picker.max_speed += self.speed_buff
 
         ttl = ITEMS[self.kind]['TTL']
         self.stop_working_at = pygame.time.get_ticks() + ttl
@@ -425,8 +420,7 @@ class SpeedUp(Item):
 
         now = pygame.time.get_ticks()
         if now > self.stop_working_at:
-            speed_up = ITEMS[self.kind]['SPEED']
-            self.picker.max_speed -= speed_up
+            self.picker.max_speed -= self.speed_buff
             self.kill()
 
 class Weapon(pygame.sprite.Sprite):

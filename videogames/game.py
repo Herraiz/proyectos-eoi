@@ -44,9 +44,7 @@ class Game:
 
         self.map.create_sprites_from_map_data(self)
 
-        self.player = Player(self, self.map.player_entry_point,
-                             PLAYER_MAX_SPEED, PLAYER_ACCELERATION,
-                             PLAYER_HEALTH, self.data.player_img, self.map)
+        self.player = Player(self, self.map.player_entry_point, self.data.player_img, self.map, 'PLAYER')
 
     def reload_data(self):
         
@@ -138,8 +136,6 @@ class Game:
         self.score = 0
         self.load_data()
         pygame.mixer.music.play(loops=-1)
-        ahora = pygame.time.get_ticks()
-        print(f'Primero: {ahora}')
         self.run()
 
     def next_level(self):

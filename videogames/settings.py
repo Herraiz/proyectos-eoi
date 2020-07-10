@@ -2,7 +2,7 @@
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (200, 100, 100)
-GREEN = (100, 200, 100)
+GREEN = (50, 200, 50)
 DARKGREEN = (10, 20, 10)
 BLUE = (100, 100, 200)
 DARKBLUE = (25, 25, 50)
@@ -33,41 +33,27 @@ MUSIC_LOOP = 'music_loop.mp3'
 
 DEAD_FX = 'dead.wav'
 
-# Mobs #TODO: Deprecated?
 
 DRAG = 10
 AVOID_RADIUS = 50
 
-PLAYER_MAX_SPEED = 180
-PLAYER_ACCELERATION = 2500
-PLAYER_HEALTH = 100
-
-BEE_MAX_SPEED = 80
-BEE_ACCELERATION = 10000
-BEE_HEALTH = 10
-BEE_HIT_DAMAGE = 10
-BEE_VISION_RADIUS = 300
-
-BEE_NEST_SPAWN_FREQUENCY = 2000
-BEE_NEST_MAX_POPULATION = 1
-BEE_NEST_HEALTH = 100
 
 MOBS = {
     'PLAYER': {
         'HEALTH': 100,
         'IMG': (19, 0),
         'WEAPON_NAME': 'GUN',
-        'MAX_SPEED': 100,
-        'ACCELERATION': 1000,
+        'MAX_SPEED': 125,
+        'ACCELERATION': 2000,
     },
 
     'BEE': {
         'HEALTH': 10,
         'IMG': (24, 11),
-        'HIT_DAMAGE': 10,
         'MAX_SPEED': 50,
         'ACCELERATION': 10000,
-        'VISION_RADIUS': 150,
+        'HIT_DAMAGE': 10,
+        'VISION_RADIUS': 250,
         },
 
     'BEE_NEST': {
@@ -79,9 +65,11 @@ MOBS = {
 
     'TOWER': {
         'HEALTH': 100,
-        'WEAPON_NAME': 'GUN',
-        'VISION_RADIUS': 250,
-        'IMG': (28, 23)
+        'WEAPON_NAME': 'TOWER_TURRET',
+        'VISION_RADIUS': 300,
+        'IMG': (28, 23),
+        'MAX_SPEED': 0,
+        'ACCELERATION': 0
     },
 
     'SPIDER': {
@@ -104,7 +92,7 @@ ITEMS = {
     },
 
     'SPEEDUP': {
-        'SPEED': 50,
+        'SPEED': 50, # 50
         'TTL': 5000,
         'IMG': (6, 29),
         'FX': 'powerup.wav',
@@ -174,5 +162,16 @@ WEAPONS = {
         'SIZE': 10,
         'AMMO_PER_SHOT': 1,
         'IMG': "assault.png"
+    },
+
+    'TOWER_TURRET': {
+        'FIRING_RATE': 750,
+        'SPREAD': 0.1,
+        'TTL':  2000,
+        'SPEED': 200,
+        'DAMAGE': 10,
+        'COLOR': YELLOW,
+        'SIZE': 15,
+        'AMMO_PER_SHOT': 1,
     },
 }

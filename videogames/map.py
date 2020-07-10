@@ -140,39 +140,28 @@ class Map():
 
                 # Bees
                 if tile == "b":
-                    name = 'BEE'
                     Bee(
                         game,
                         position,
-                        MOBS[name]['MAX_SPEED'],
-                        MOBS[name]['ACCELERATION'],
-                        MOBS[name]['HEALTH'],
-                        MOBS[name]['HIT_DAMAGE'],
-                        self.data.bee_img
+                        self.data.bee_img,
+                        'BEE'
                     )
 
-                # Deprecated bee nests
+                # Deprecated Bee Nests
                 if tile == "B":
-                    name = 'BEE_NEST'
                     BeeNest(
                         game,
                         position,
-                        MOBS[name]['HEALTH'],
-                        MOBS[name]['SPAWN_FREQUENCY'] + randint(2000, 5000),
-                        MOBS[name]['MAX_POPULATION'],
-                        self.data.bee_nest_img
+                        self.data.bee_nest_img,
+                        'BEE_NEST'
                     )
 
                 # Spiders
                 if tile == "X":
-                    name = 'SPIDER'
                     Spider(game,
                            position,
-                           MOBS[name]['MAX_SPEED'],
-                           MOBS[name]['ACCELERATION'],
-                           MOBS[name]['HEALTH'],
-                           MOBS[name]['HIT_DAMAGE'],
-                           self.data.spider_img
+                           self.data.spider_img,
+                           'SPIDER'
                            )
 
                 # Towers
@@ -180,13 +169,14 @@ class Map():
                     Tower(
                         game,
                         position,
-                        self.data.tower_img
+                        self.data.tower_img,
+                        'TOWER'
                     )
 
                 # Items
                 if tile == "h":
                     HealthPack(game, position)
-                    
+
                 if tile == "s":
                     SpeedUp(game, position)
 

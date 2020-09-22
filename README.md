@@ -2,7 +2,7 @@
 |Módulo  | Proyecto  |
 |--|--|
 |1. Language  |[POO Spotify](https://github.com/RoberHerraiz/proyectos-eoi/tree/master/lenguaje)
-| 2. Libraries | [Backup & Sheldon Game](https://github.com/RoberHerraiz/proyectos-eoi/tree/master/librerias) |
+| 2. Libraries | [Backup](https://github.com/RoberHerraiz/proyectos-eoi/tree/master/librerias/backup) & [Rock, Paper, Scissors, Lizard and Spock Game](https://github.com/RoberHerraiz/proyectos-eoi/tree/master/librerias/sheldon)|
 | 3. Web Development | [Django](https://github.com/RoberHerraiz/shield) |
 | 4. Sysadmin/DevOps| [Despliegue web Vagrant/Ansible](https://github.com/RoberHerraiz/proyectos-eoi/tree/master/sysadmin) |
 | 5. Data Science | [Machine Learning](https://github.com/RoberHerraiz/proyectos-eoi/tree/master/data-science) |

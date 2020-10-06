@@ -29,11 +29,3 @@ En orden de importancia, se evaluará la entrega acorde a los siguientes puntos:
 1. **<ins>Funcionalidad</ins>**: La aplicación debe ejecutarse sin errores y hacer lo que se le supone. Se espera también cierta estabilidad frente a acciones "no-comunes" por parte del usuario, como por ejemplo pulsaciones de teclas inesperadas o redimensionado de la ventana; en general, con aplicaciones de este tipo es una buena práctica guiarse por el [POLA](https://en.wikipedia.org/wiki/Principle_of_least_astonishment)
 2. **<ins>Mejoras opcionales</ins>**: Se valorarán todas aquellas mejoras que se implementen más allá de los requisitos mínimos
 3. **<ins>Organización de código</ins>**: A medida que se vayan implementando funcionalidades, la organización básica de "todo en un fichero" y "todo objetos globales" es cada vez más problemática. Investigar maneras más avanzadas de gestionar el código; recomiendo revisar el código fuente de algunas aplicaciones de código abierto que usan PyQt, como por ejemplo [Anki](https://github.com/ankitects/anki/tree/master/qt/aqt) o [Calibre](https://github.com/kovidgoyal/calibre/tree/master/src/calibre/gui2)
-
-## Fecha límite de entrega
-
-La tarea deberá ser entregada, a más tardar, el **domingo 5 de julio** a las **23:59 WEST**
-
-## Forma de entrega
-
-Se habilitará una tarea en nuestro Google Classroom a tal efecto para poder subir los ficheros finales.

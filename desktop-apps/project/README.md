@@ -21,15 +21,6 @@ En este caso se ha optado por utilizar las capabilidades organizativas de [`QMai
 
 * Menú contextual al hacer click derecho en el QTreeView
     * Mostrar algunas opciones extras aquí (cuantas más, mejor); por ejemplo _abrir fichero_, _renombrar_, _borrar_ o _copiar ruta en el portapapeles_. Dichas acciones deben estar realmente implementadas
-* Implementar un editor de Markdown
-    * La clase a utilizar en este caso es [`QWebEngineView`](https://doc.qt.io/qt-5/qwebengineview.html)
-    * El import correcto es `from PyQt5.QtWebEngineWidgets import QWebEngineView`
-    * `QtWebEngineWidgets` es un paquete aparte que no viene en la instalación por defecto de PyQt5, por lo que es necesario instalarlo aparte; ver [aqui](https://stackoverflow.com/a/54947671/1911099)
-    * Para generar el HTML correspondiente a un Markdown dado, se pueden utilizar varios módulos ya existentes para ello; [ejemplo](https://github.com/trentm/python-markdown2)
-    * Hay varias opciones también para gestionar el "refresco" de la vista HTML; la más sencilla es añadir un botón en algún lugar de la interfaz para generar el nuevo HTML y configurar el `QWebEngineView` para mostrarlo. Opciones más realistas pasan por refrescar la vista al guardar el fichero, o al transcurrir un tiempo determinado desde la última pulsación de tecla (2 segundos es un tiempo razonable para ello)
-    * Habrá que prestar atención a los posibles errores de conversión Markdown -> HTML que se puedan dar. Si no es posible generar HTML válido, la vista del `QWebEngineView` debería quedarse en blanco, o mostrar algún tipo de mensaje de error
-
-![PyNotepad con explorador de ficheros](./webview.png)
 
 ## Criterios de evaluación
 

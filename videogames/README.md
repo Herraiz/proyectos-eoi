@@ -35,8 +35,3 @@ Lo dejamos bastante avanzado, pero le faltarían los puntos comunes (ver arriba)
 ## PROYECTO 4 - PLATAFORMAS
 
 Este es el más difícil / largo porque lo dejamos más en prototipo. Necesitaría una serie de niveles creados a mano en los que tenemos que hacer algo para pasar al siguiente: por ejemplo, coger todas las moneditas. Podrían meter a las abejas del PEWPEWPEW, pero hacer que no choquen con los muros. Incluso podrían hacer que el jugador pudiera dispararles. Es el proyecto más abierto, pero recuerden que hagan lo que hagan la condición es que sea jugable - que haya un objetivo y una cierta progresión (inicio, fin de una fase, pasar a la siguiente)
-
-¡A POR ELLO! Cualquier cosa contacten conmigo por Telegram y les resuelvo dudas - si vemos que pueden ser comunes a todos usen el grupo, si no pues por privado. 
-- Subcriaturas, ... ¡elegid y pereced! 
-- ¿Qué tenemos que elegir? 
-- Elegid la forma del destructor. Ghostbusters, 1984

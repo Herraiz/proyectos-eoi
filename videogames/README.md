@@ -1,3 +1,5 @@
+## DESCRIPCIÓN DE LOS PROYECTOS:
+
 Durante el módulo hemos visto varios juegos, o mejor dicho prototipos de juegos. Al fin y al cabo un juego se termina cuando se empaqueta y se publica, y para eso hace falta todavía añadirles cosas a los que hemos ido viendo. El proyecto final consistirá en elegir uno de los siguientes proyectos y completarlo. Si funciona y es jugable, están aprobados. 
 ¡Elijan el proyecto en base al tiempo que tengan para poder trabajar en él! Están ordenados por dificultad en base al trabajo que quedaría por hacer para conseguir un juego completo.
 
